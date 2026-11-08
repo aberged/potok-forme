@@ -149,7 +149,7 @@ function confirmationCard(c: PotokCaps | null) {
   const sent = state.fill.sent;
   const canAgain = !settings.once && settings.anotherLink && !state.preview;
 
-  return html`<section class="pf-card pf-message-card" id="form-sent">
+  return html`<section class="pf-card pf-header-card pf-message-card" id="form-sent">
     <h1 class="pf-form-title">${state.form.title || t('untitledForm')}</h1>
     <p>${settings.confirmation || t('confirmationDefault')}</p>
     ${state.preview ? html`<p class="pf-muted">${t('previewNote')}</p>` : nothing}
