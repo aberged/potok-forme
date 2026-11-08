@@ -35,7 +35,7 @@ export function settingsTab() {
 
   return html`<div class="pf-column pf-settings">
     ${group(
-      t('settingsQuiz'),
+      t('quizGroup'),
       html`${row(
           t('settingsQuiz'),
           toggle(quiz.enabled, t('settingsQuiz'), (on) =>

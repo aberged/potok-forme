@@ -13,17 +13,36 @@ import {
   duplicateItem,
   edit,
   editItem,
+  editTheme,
   moveItemTo,
   setActive,
 } from '../../store/editor';
 import { state, update } from '../../store/state';
-import { iconButton, menu, menuItem, notice, richField, richText, select, ui, underlined } from '../common';
+import { button, iconButton, menu, menuItem, notice, richField, richText, select, ui, underlined } from '../common';
 import { startDrag } from '../drag';
 import { icon } from '../icons';
 import { pictureView, videoCard } from './pictures';
 import { questionEditor, questionSummary } from './question';
 
 const HEADER = '_header';
+
+/** The picture over the form's title, the one thing about its look a form chooses. */
+export function headerPicture() {
+  const header = state.form.theme.header;
+  return header ? html`<div class="pf-header-image"><img src=${header.url} alt="" /></div>` : nothing;
+}
+
+function headerTools() {
+  const t = ui.t;
+  const choose = () => update((s) => (s.dialog = { kind: 'picture', target: { kind: 'header' } }));
+
+  return html`<div class="pf-header-tools">
+    ${state.form.theme.header
+      ? html`${button(t('changePicture'), choose, { kind: 'secondary', icon: 'image', id: 'header-picture' })}
+          ${button(t('removePicture'), () => editTheme((theme) => (theme.header = null)), { id: 'header-picture-remove' })}`
+      : button(t('headerImage'), choose, { kind: 'secondary', icon: 'image', id: 'header-picture' })}
+  </div>`;
+}
 
 function headerCard() {
   const t = ui.t;
@@ -35,6 +54,7 @@ function headerCard() {
     id="form-header"
     @click=${() => !active && setActive(HEADER)}
   >
+    ${headerPicture()}
     ${active
       ? html`${underlined(form.title, t('formTitlePlaceholder'), (value) => edit((f) => (f.title = value), 'form-title'), {
             id: 'form-title',
@@ -42,7 +62,8 @@ function headerCard() {
             maxlength: 300,
           })}
           ${richField('form-description', form.description, t('formDescriptionPlaceholder'), (value) =>
-            edit((f) => (f.description = value), 'form-description'))}`
+            edit((f) => (f.description = value), 'form-description'))}
+          ${headerTools()}`
       : html`<h1 class="pf-form-title">${form.title || t('untitledForm')}</h1>
           ${form.description ? richText(form.description, 'pf-form-description') : html`<p class="pf-muted">${t('formDescriptionPlaceholder')}</p>`}`}
   </section>`;
@@ -184,7 +205,6 @@ export function questionsTab() {
   return html`<div class="pf-editor-layout">
     <div class="pf-column">
       ${fillHidden ? notice(ui.t('visibilityWarning'), 'warning') : nothing}
-      ${state.form.theme.header ? html`<div class="pf-header-image"><img src=${state.form.theme.header.url} alt="" /></div>` : nothing}
       ${headerCard()}
       ${sectionEnds.get(-1) ? afterSection(sectionEnds.get(-1)!.id, sectionEnds.get(-1)!.number) : nothing}
       <div class="pf-items" data-drag-list>

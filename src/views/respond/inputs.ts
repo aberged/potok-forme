@@ -8,7 +8,7 @@ import { OTHER, type Question } from '../../model/form';
 import { acceptOf, removeFile, sendFiles, setAnswer, setOther } from '../../store/fill';
 import { state } from '../../store/state';
 import { ui } from '../common';
-import { icon } from '../icons';
+import { icon, solidIcon } from '../icons';
 import { pictureView } from '../editor/pictures';
 
 const valueOf = (event: Event) => (event.target as HTMLInputElement).value;
@@ -133,7 +133,7 @@ function ratingInput(question: Question, disabled: boolean) {
     ${Array.from({ length: question.ratingLevels }, (_, index) => index + 1).map(
       (level) => html`<label class="pf-rating-level ${level <= answer ? 'pf-rating-on' : ''}" title=${String(level)}>
         <input type="radio" class="sr-only" name="q-${question.id}" .checked=${live(answer === level)} ?disabled=${disabled} @change=${() => setAnswer(question, level)} />
-        ${icon(question.ratingIcon, 'size-8')}
+        ${level <= answer ? solidIcon(question.ratingIcon, 'size-8') : icon(question.ratingIcon, 'size-8')}
         <span class="pf-rating-number">${level}</span>
       </label>`,
     )}
@@ -250,7 +250,7 @@ function fileInput(question: Question, disabled: boolean) {
       </div>`,
     )}
     ${room && !disabled
-      ? html`<label class="pf-button pf-button-outline">
+      ? html`<label class="pf-button pf-button-secondary">
           ${icon('upload', 'size-4')}<span>${t('addFile')}</span>
           <input
             type="file"

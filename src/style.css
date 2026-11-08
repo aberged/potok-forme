@@ -3,12 +3,16 @@
 /* daisyUI with the `d-` prefix and no themes: the colors come from the potok
    page's theme (the frame follows its data-theme), and src/dev-theme.css
    stands in for it in dev. The form draws itself with the `pf-` rules below,
-   in the shape of Google's forms and the colors of Potok's light and dark. */
+   in Potok's own look: its theme colors, 16px cards with a soft border, pill
+   buttons and chips, icon tiles, and dialogs that rise from the bottom on a
+   phone. The values follow potok-ide's core_components.ex. */
 @plugin "daisyui" {
   themes: false;
   prefix: "d-";
 }
 
+/* The frame loads the page's CSS, which paints the body. The form sits on the
+   background of the group page instead, as a description in text does. */
 html,
 body {
   background: transparent;
@@ -17,66 +21,66 @@ body {
 /* ---------- Tokens ---------- */
 
 .pf-root {
-  --pf-accent: #673ab7;
+  --pf-accent: var(--color-primary);
+  --pf-on-accent: var(--color-primary-content);
   --pf-surface: var(--color-base-100);
-  --pf-raised: var(--color-base-200);
+  --pf-raised: color-mix(in oklab, var(--color-base-200) 55%, var(--color-base-100));
   --pf-ink: var(--color-base-content);
-  --pf-muted: color-mix(in oklab, var(--color-base-content) 64%, transparent);
-  --pf-line: color-mix(in oklab, var(--color-base-content) 16%, transparent);
-  --pf-hover: color-mix(in oklab, var(--color-base-content) 7%, transparent);
-  --pf-accent-soft: color-mix(in oklab, var(--pf-accent) 14%, transparent);
+  --pf-soft-ink: color-mix(in oklab, var(--color-base-content) 82%, transparent);
+  --pf-muted: color-mix(in oklab, var(--color-base-content) 65%, transparent);
+  --pf-faint: color-mix(in oklab, var(--color-base-content) 45%, transparent);
+  --pf-line: color-mix(in oklab, var(--color-base-300) 75%, transparent);
+  --pf-field-line: color-mix(in oklab, var(--color-base-content) 18%, transparent);
+  --pf-field-hover: color-mix(in oklab, var(--color-base-content) 32%, transparent);
+  --pf-hover: color-mix(in oklab, var(--color-base-content) 8%, transparent);
+  --pf-accent-soft: color-mix(in oklab, var(--color-primary) 10%, transparent);
+  --pf-accent-softer: color-mix(in oklab, var(--color-primary) 6%, transparent);
+  --pf-accent-line: color-mix(in oklab, var(--color-primary) 30%, transparent);
+  --pf-ring: color-mix(in oklab, var(--color-primary) 40%, transparent);
+  --pf-focus: 0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent);
   --pf-error: var(--color-error);
-  --pf-good: #0ca30c;
-  --pf-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 2px 6px rgb(0 0 0 / 0.06);
-  --pf-page: color-mix(in oklab, var(--pf-accent) 10%, var(--color-base-200));
-  /* The one chart hue, validated against Potok's surfaces (dataviz palette). */
-  --viz-1: #2a78d6;
-  --viz-track: color-mix(in oklab, #2a78d6 20%, transparent);
+  /* Potok's success and warning buttons use Tailwind's emerald and amber. */
+  --pf-good: #10b981;
+  --pf-good-ink: #047857;
+  --pf-warn: #f59e0b;
+  --pf-warn-ink: #b45309;
+  --pf-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --pf-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --pf-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --pf-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --pf-radius-box: 1rem;
+  --pf-radius-field: 0.75rem;
+  /* The one chart hue: Potok's primary in light; in dark the primary is too
+     pale for a bar, so the same sky hue a step deeper (dataviz validator). */
+  --viz-1: #0a5bc4;
+  --viz-track: color-mix(in oklab, #0a5bc4 16%, transparent);
 
   min-height: 100vh;
-  background: var(--pf-page);
+  background: transparent;
   color: var(--pf-ink);
   font-size: 15px;
   line-height: 1.5;
-}
-
-.pf-bg-medium {
-  --pf-page: color-mix(in oklab, var(--pf-accent) 22%, var(--color-base-200));
-}
-.pf-bg-dark {
-  --pf-page: color-mix(in oklab, var(--pf-accent) 38%, var(--color-base-200));
-}
-.pf-bg-plain {
-  --pf-page: var(--color-base-200);
+  -webkit-tap-highlight-color: transparent;
 }
 
 [data-theme="dark"] .pf-root {
-  --viz-1: #3987e5;
-  --viz-track: color-mix(in oklab, #3987e5 26%, transparent);
-  --pf-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  --pf-good-ink: #6ee7b7;
+  --pf-warn-ink: #fcd34d;
+  --pf-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --pf-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.35);
+  --viz-1: #259ed6;
+  --viz-track: color-mix(in oklab, #259ed6 24%, transparent);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) .pf-root {
-    --viz-1: #3987e5;
-    --viz-track: color-mix(in oklab, #3987e5 26%, transparent);
-    --pf-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+    --pf-good-ink: #6ee7b7;
+    --pf-warn-ink: #fcd34d;
+    --pf-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --pf-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.35);
+    --viz-1: #259ed6;
+    --viz-track: color-mix(in oklab, #259ed6 24%, transparent);
   }
-}
-
-.pf-font-decorative,
-.pf-chip.pf-font-decorative {
-  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
-}
-.pf-font-formal,
-.pf-chip.pf-font-formal {
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
-  letter-spacing: 0.01em;
-}
-.pf-font-playful,
-.pf-chip.pf-font-playful {
-  /* Potok's own Comfortaa, which the page's CSS brings into the frame. */
-  font-family: "Comfortaa", ui-rounded, system-ui, sans-serif;
 }
 
 .pf-muted {
@@ -95,24 +99,65 @@ body {
   color: var(--pf-accent);
 }
 
+@keyframes pf-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pf-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
+@keyframes pf-sheet {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes pf-pop {
+  from {
+    transform: scale(0.97);
+    opacity: 0;
+  }
+}
+
+@keyframes pf-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-root *,
+  .pf-root *::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* ---------- Layout ---------- */
 
 .pf-main {
-  padding: 12px 12px 112px;
-}
-
-.pf-column.pf-wide {
-  max-width: 1240px;
+  padding: 16px 16px 112px;
 }
 
 .pf-column {
-  max-width: 770px;
+  max-width: 768px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
   min-width: 0;
   width: 100%;
+}
+
+.pf-column.pf-wide {
+  max-width: 1240px;
 }
 
 .pf-editor-layout {
@@ -132,50 +177,76 @@ body {
   gap: 12px;
 }
 
-/* ---------- Top bar and tabs ---------- */
+.pf-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 72px 16px;
+  font-size: 14px;
+}
+
+.pf-pulse {
+  animation: pf-pulse 1.4s ease-in-out infinite;
+}
+
+/* An icon in a soft tile of the primary color, as Potok's page headers have. */
+.pf-tile {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 1rem;
+  background: var(--pf-accent-soft);
+  color: var(--pf-accent);
+  box-shadow: var(--pf-shadow-xs);
+}
+
+.pf-tile-small {
+  width: 36px;
+  height: 36px;
+  border-radius: 0.875rem;
+  box-shadow: none;
+}
+
+/* ---------- Header and tabs ---------- */
 
 .pf-topbar {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: var(--pf-surface);
+  background: color-mix(in oklab, var(--pf-surface) 86%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--pf-line);
-  box-shadow: var(--pf-shadow);
+}
+
+.pf-topbar-row,
+.pf-tabs {
+  max-width: 830px;
+  margin: 0 auto;
 }
 
 .pf-topbar-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-  padding: 8px 12px 0;
-}
-
-.pf-app-mark {
-  color: var(--pf-accent);
-  display: inline-flex;
-  margin-right: 8px;
+  gap: 8px 12px;
+  padding: 14px 16px 10px;
 }
 
 .pf-topbar-title {
   display: flex;
-  flex: 1;
+  flex: 1 1 12rem;
   flex-direction: column;
   min-width: 0;
 }
 
-@media (max-width: 640px) {
-  .pf-save-text,
-  .pf-move-button {
-    display: none;
-  }
-
-  .pf-topbar-row .pf-button {
-    padding: 8px 12px;
-  }
-}
-
 .pf-topbar-name {
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -185,7 +256,12 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  margin-top: 2px;
   font-size: 12px;
+  color: var(--pf-muted);
+}
+
+.pf-save-saved {
   color: var(--pf-muted);
 }
 
@@ -194,73 +270,184 @@ body {
   color: var(--pf-error);
 }
 
+.pf-topbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
 .pf-tabs {
   display: flex;
-  justify-content: center;
   gap: 8px;
+  padding: 0 16px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pf-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .pf-tab {
-  position: relative;
-  padding: 10px 14px 12px;
-  font-size: 14px;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--color-base-300);
+  border-radius: 999px;
+  background: var(--pf-surface);
   color: var(--pf-muted);
-  border-radius: 4px 4px 0 0;
-  transition: color 150ms;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 150ms ease-out, background 150ms ease-out, border-color 150ms ease-out, transform 150ms ease-out;
 }
 
 .pf-tab:hover {
   color: var(--pf-ink);
 }
 
-.pf-tab-on {
-  color: var(--pf-accent);
+.pf-tab:active {
+  transform: scale(0.95);
 }
 
-.pf-tab-on::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 0;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
+.pf-tab-on,
+.pf-tab-on:hover {
+  border-color: var(--pf-accent);
   background: var(--pf-accent);
+  color: var(--pf-on-accent);
 }
 
 .pf-tab-count {
-  margin-left: 6px;
-  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 6px;
   border-radius: 999px;
-  background: var(--pf-accent);
-  color: #fff;
-  font-size: 12px;
+  background: var(--pf-accent-soft);
+  color: var(--pf-accent);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
 }
 
-.pf-preview-bar,
-.pf-reader-bar,
-.pf-conflict {
+.pf-tab-on .pf-tab-count {
+  background: color-mix(in oklab, var(--color-primary-content) 22%, transparent);
+  color: var(--pf-on-accent);
+}
+
+@media (max-width: 640px) {
+  .pf-topbar-row {
+    padding: 12px 12px 8px;
+  }
+
+  .pf-tabs {
+    padding: 0 12px 10px;
+  }
+
+  .pf-topbar .pf-tile {
+    width: 36px;
+    height: 36px;
+    border-radius: 0.875rem;
+  }
+
+  .pf-topbar-name {
+    font-size: 17px;
+  }
+
+  /* Dragging by the handle stays; the footer keeps to one line. */
+  .pf-card-footer .pf-move-button {
+    display: none;
+  }
+}
+
+/* The bar over the form while an editor fills it in. */
+.pf-fill-bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  background: var(--pf-surface);
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 10px max(16px, calc((100% - 768px) / 2));
+  background: color-mix(in oklab, var(--pf-surface) 86%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--pf-line);
 }
 
+.pf-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pf-short {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .pf-long {
+    display: none;
+  }
+
+  .pf-short {
+    display: inline;
+  }
+}
+
+.pf-status-live {
+  border-color: color-mix(in oklab, var(--pf-good) 40%, transparent);
+  background: color-mix(in oklab, var(--pf-good) 10%, transparent);
+  color: var(--pf-good-ink);
+}
+
+.pf-status-preview {
+  border-color: color-mix(in oklab, var(--pf-warn) 40%, transparent);
+  background: color-mix(in oklab, var(--pf-warn) 10%, transparent);
+  color: var(--pf-warn-ink);
+}
+
 .pf-reader-bar {
+  display: flex;
   justify-content: flex-end;
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 16px 16px 0;
 }
 
 .pf-conflict {
+  display: flex;
   flex-wrap: wrap;
-  background: color-mix(in oklab, var(--pf-error) 10%, var(--pf-surface));
+  align-items: center;
+  gap: 10px 12px;
+  max-width: 798px;
+  margin: 12px auto 0;
+  padding: 12px 16px;
+  border: 1px solid color-mix(in oklab, var(--pf-error) 30%, transparent);
+  border-radius: var(--pf-radius-box);
+  background: color-mix(in oklab, var(--pf-error) 8%, var(--pf-surface));
+  color: var(--pf-error);
+  font-size: 14px;
 }
 
 .pf-conflict > div {
   flex: 1;
   min-width: 220px;
+  color: var(--pf-ink);
 }
 
 /* ---------- Cards ---------- */
@@ -269,48 +456,50 @@ body {
   position: relative;
   background: var(--pf-surface);
   border: 1px solid var(--pf-line);
-  border-radius: 8px;
-  padding: 22px 24px;
-  transition: box-shadow 150ms;
+  border-radius: var(--pf-radius-box);
+  padding: 20px 22px;
+  box-shadow: var(--pf-shadow-xs);
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
 }
 
 .pf-header-card {
-  border-top: 10px solid var(--pf-accent);
-  padding-top: 20px;
+  background: linear-gradient(180deg, var(--pf-accent-softer), transparent 140px), var(--pf-surface);
+}
+
+/* A card of the editor that opens on a click. */
+.pf-items .pf-card:not(.pf-card-active),
+.pf-editor-layout .pf-header-card:not(.pf-card-active) {
+  cursor: pointer;
+}
+
+.pf-items .pf-card:not(.pf-card-active):hover,
+.pf-editor-layout .pf-header-card:not(.pf-card-active):hover {
+  border-color: color-mix(in oklab, var(--color-base-content) 20%, transparent);
+  box-shadow: var(--pf-shadow-sm);
 }
 
 .pf-card-active {
-  box-shadow: var(--pf-shadow);
-}
-
-.pf-card-active::before {
-  content: "";
-  position: absolute;
-  top: -1px;
-  bottom: -1px;
-  left: -1px;
-  width: 6px;
-  border-radius: 8px 0 0 8px;
-  background: #4285f4;
-}
-
-.pf-header-card.pf-card-active::before {
-  top: -10px;
+  border-color: var(--pf-accent-line);
+  box-shadow: 0 0 0 3px var(--pf-accent-softer), var(--pf-shadow-md);
 }
 
 .pf-card-error {
-  border-color: var(--pf-error);
+  border-color: color-mix(in oklab, var(--pf-error) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pf-error) 8%, transparent);
 }
 
 .pf-section-tab {
   align-self: flex-start;
-  display: inline-block;
-  padding: 6px 16px;
-  margin-bottom: -1px;
-  border-radius: 8px 8px 0 0;
-  background: var(--pf-accent);
-  color: #fff;
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  margin: 6px 0 8px 6px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--pf-accent-soft);
+  color: var(--pf-accent);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .pf-item-slot {
@@ -319,22 +508,21 @@ body {
 }
 
 .pf-section-card {
-  border-top-left-radius: 0;
+  background: linear-gradient(180deg, var(--pf-accent-softer), transparent 100px), var(--pf-surface);
 }
 
 .pf-card-handle {
   display: flex;
   justify-content: center;
-  margin: -16px 0 4px;
-  color: var(--pf-muted);
+  margin: -14px 0 4px;
+  color: var(--pf-faint);
   cursor: grab;
   touch-action: none;
-  opacity: 0.6;
 }
 
 .pf-dragging {
   z-index: 10;
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
 .pf-drop-before {
@@ -345,35 +533,61 @@ body {
   margin-top: 8px;
 }
 
+.pf-header-image {
+  margin: -20px -22px 18px;
+}
+
 .pf-header-image img {
-  width: 100%;
-  max-height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
   display: block;
+  width: 100%;
+  border-radius: calc(var(--pf-radius-box) - 1px) calc(var(--pf-radius-box) - 1px) 0 0;
+  aspect-ratio: 4 / 1;
+  max-height: 220px;
+  object-fit: cover;
+}
+
+.pf-header-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.pf-sent-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 12px;
+  border-radius: 1rem;
+  background: var(--pf-accent-soft);
+  color: var(--pf-accent);
 }
 
 /* ---------- Text ---------- */
 
 .pf-form-title {
-  font-size: 32px;
-  line-height: 1.25;
-  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   word-break: break-word;
 }
 
 .pf-form-description {
   margin-top: 8px;
+  color: var(--pf-soft-ink);
 }
 
 .pf-section-title {
-  font-size: 22px;
-  font-weight: 400;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .pf-text-title {
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 17px;
+  font-weight: 600;
 }
 
 .pf-question-title {
@@ -382,7 +596,8 @@ body {
   align-items: baseline;
   gap: 4px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.4;
   word-break: break-word;
 }
 
@@ -394,11 +609,12 @@ body {
 
 .pf-required {
   color: var(--pf-error);
+  font-weight: 600;
 }
 
 .pf-required-note {
-  margin-top: 16px;
-  font-size: 14px;
+  margin-top: 14px;
+  font-size: 13px;
   color: var(--pf-error);
 }
 
@@ -407,7 +623,7 @@ body {
   flex-direction: column;
   gap: 2px;
   margin-top: 16px;
-  padding-top: 12px;
+  padding-top: 14px;
   border-top: 1px solid var(--pf-line);
   font-size: 14px;
 }
@@ -438,12 +654,16 @@ body {
 .pf-link {
   color: var(--pf-accent);
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .pf-points-label {
   margin-left: auto;
-  font-size: 13px;
-  font-weight: 400;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--pf-raised);
+  font-size: 12px;
+  font-weight: 600;
   color: var(--pf-muted);
 }
 
@@ -451,23 +671,28 @@ body {
 
 .pf-field {
   width: 100%;
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--pf-line);
-  padding: 8px 2px 7px;
+  min-height: 40px;
+  padding: 8px 12px;
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-field-line);
+  border-radius: var(--pf-radius-field);
   font: inherit;
   color: inherit;
   outline: none;
-  transition: border-color 150ms, background 150ms;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out, background 150ms ease-out;
 }
 
-.pf-field:hover {
-  border-bottom-color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+.pf-field:hover:not(:disabled) {
+  border-color: var(--pf-field-hover);
 }
 
 .pf-field:focus {
-  border-bottom: 2px solid var(--pf-accent);
-  padding-bottom: 6px;
+  border-color: var(--pf-accent);
+  box-shadow: var(--pf-focus);
+}
+
+.pf-field:disabled {
+  opacity: 0.6;
 }
 
 textarea.pf-field {
@@ -477,12 +702,54 @@ textarea.pf-field {
 }
 
 .pf-field::placeholder {
-  color: var(--pf-muted);
+  color: var(--pf-faint);
+}
+
+/* Fields of the editor stay quiet until they are used. */
+.pf-form-title-field,
+.pf-section-title-field,
+.pf-text-title-field,
+.pf-option-input,
+.pf-rich-field .pf-field:not(.pf-question-title-field) {
+  border-color: transparent;
+  background: transparent;
+}
+
+.pf-form-title-field:hover,
+.pf-section-title-field:hover,
+.pf-text-title-field:hover,
+.pf-option-input:hover,
+.pf-rich-field .pf-field:not(.pf-question-title-field):hover {
+  background: var(--pf-hover);
+  border-color: transparent;
+}
+
+.pf-form-title-field:focus,
+.pf-section-title-field:focus,
+.pf-text-title-field:focus,
+.pf-option-input:focus,
+.pf-rich-field .pf-field:not(.pf-question-title-field):focus {
+  background: var(--pf-surface);
+  border-color: var(--pf-accent);
 }
 
 .pf-form-title-field {
-  font-size: 32px;
-  line-height: 1.25;
+  margin-left: -12px;
+  width: calc(100% + 12px);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.pf-section-title-field {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.pf-text-title-field {
+  font-size: 17px;
+  font-weight: 600;
 }
 
 .pf-question-head {
@@ -497,22 +764,11 @@ textarea.pf-field {
 }
 
 .pf-question-title-field {
+  min-height: 46px;
+  padding: 11px 14px;
   background: var(--pf-raised);
-  padding: 14px 12px 13px;
-  font-size: 16px;
-  border-radius: 4px 4px 0 0;
-}
-
-.pf-question-title-field:focus {
-  padding-bottom: 12px;
-}
-
-.pf-section-title-field {
-  font-size: 22px;
-}
-
-.pf-text-title-field {
-  font-size: 18px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .pf-narrow {
@@ -529,23 +785,35 @@ textarea.pf-field {
 }
 
 .pf-answer-field {
-  max-width: 50%;
-  min-width: min(100%, 280px);
+  max-width: 32rem;
 }
 
 textarea.pf-answer-field {
   max-width: 100%;
+  min-height: 72px;
 }
 
 .pf-rich-field {
+  position: relative;
   display: flex;
   flex-direction: column;
 }
 
+/* It floats under its field: appearing on focus and going on blur, it would
+   otherwise move what is below between a press and its release, and the click
+   would land beside the control that was pressed. */
 .pf-format-bar {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
   display: flex;
   gap: 2px;
-  padding-top: 4px;
+  padding: 3px;
+  border: 1px solid var(--pf-line);
+  border-radius: 999px;
+  background: var(--pf-surface);
+  box-shadow: var(--pf-shadow-md);
 }
 
 .pf-rich-field:not(:focus-within) .pf-format-bar {
@@ -553,31 +821,59 @@ textarea.pf-answer-field {
 }
 
 .pf-format-bar .pf-icon-button {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
 }
 
 .pf-select {
   max-width: 100%;
-  background: var(--pf-surface);
+  height: 40px;
+  padding: 0 34px 0 12px;
+  appearance: none;
+  background-color: var(--pf-surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
   color: inherit;
-  border: 1px solid var(--pf-line);
-  border-radius: 4px;
-  padding: 8px 10px;
+  border: 1px solid var(--pf-field-line);
+  border-radius: var(--pf-radius-field);
   font: inherit;
   font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+
+.pf-select:hover:not(:disabled) {
+  border-color: var(--pf-field-hover);
+}
+
+.pf-select:focus {
+  border-color: var(--pf-accent);
+  box-shadow: var(--pf-focus);
+}
+
+.pf-select option {
+  background: var(--pf-surface);
+  color: var(--pf-ink);
 }
 
 .pf-select-small {
-  padding: 4px 6px;
+  height: 32px;
+  padding: 0 28px 0 10px;
+  background-position: right 9px center;
+  font-size: 13px;
 }
 
 .pf-answer-select {
-  min-width: 200px;
+  min-width: 220px;
 }
 
 .pf-goto {
   max-width: 220px;
+  height: 34px;
+  font-size: 13px;
 }
 
 /* ---------- Buttons ---------- */
@@ -587,61 +883,103 @@ textarea.pf-answer-field {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px 18px;
-  border-radius: 4px;
+  height: 40px;
+  padding: 0 20px;
   border: 1px solid transparent;
+  border-radius: 999px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background 150ms, box-shadow 150ms, filter 150ms;
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out, background 150ms ease-out, border-color 150ms ease-out,
+    color 150ms ease-out;
+}
+
+.pf-button:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .pf-button:disabled {
   opacity: 0.5;
-  cursor: default;
+  cursor: not-allowed;
 }
 
 .pf-button-primary {
   background: var(--pf-accent);
-  color: #fff;
+  color: var(--pf-on-accent);
+  box-shadow: 0 1px 2px 0 color-mix(in oklab, var(--color-primary) 30%, transparent), var(--pf-shadow-sm);
 }
 
 .pf-button-primary:hover:not(:disabled) {
-  filter: brightness(0.92);
-  box-shadow: var(--pf-shadow);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px -2px color-mix(in oklab, var(--color-primary) 35%, transparent), var(--pf-shadow-md);
+}
+
+.pf-button-secondary {
+  border-color: var(--color-base-300);
+  background: var(--pf-surface);
+  color: var(--pf-ink);
+}
+
+.pf-button-secondary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--pf-field-hover);
+  background: var(--color-base-200);
+}
+
+.pf-button-soft {
+  border-color: var(--pf-accent-line);
+  background: var(--pf-accent-soft);
+  color: var(--pf-accent);
+}
+
+.pf-button-soft:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--color-primary) 15%, transparent);
 }
 
 .pf-button-text {
-  color: var(--pf-accent);
+  color: var(--pf-muted);
+  padding: 0 14px;
 }
 
-.pf-button-text:hover:not(:disabled),
-.pf-button-outline:hover:not(:disabled) {
-  background: var(--pf-accent-soft);
+.pf-button-text:hover:not(:disabled) {
+  background: var(--pf-hover);
+  color: var(--pf-ink);
 }
 
-.pf-button-outline {
-  border-color: var(--pf-line);
-  color: var(--pf-accent);
+.pf-button-success {
+  border-color: color-mix(in oklab, var(--pf-good) 40%, transparent);
+  background: color-mix(in oklab, var(--pf-good) 10%, transparent);
+  color: var(--pf-good-ink);
+}
+
+.pf-button-success:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--pf-good) 15%, transparent);
 }
 
 .pf-button-danger {
+  border-color: color-mix(in oklab, var(--pf-error) 30%, transparent);
+  background: color-mix(in oklab, var(--pf-error) 10%, transparent);
   color: var(--pf-error);
 }
 
-.pf-button-danger:hover {
-  background: color-mix(in oklab, var(--pf-error) 10%, transparent);
+.pf-button-danger:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--pf-error) 15%, transparent);
 }
 
 .pf-icon-button {
   display: inline-grid;
   place-items: center;
   flex: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
   color: var(--pf-muted);
-  transition: background 150ms, color 150ms;
+  cursor: pointer;
+  transition: background 150ms ease-out, color 150ms ease-out, transform 150ms ease-out;
 }
 
 .pf-icon-button:hover:not(:disabled) {
@@ -649,36 +987,127 @@ textarea.pf-answer-field {
   color: var(--pf-ink);
 }
 
+.pf-icon-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
 .pf-icon-button:disabled {
   opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .pf-icon-button-active {
+  background: var(--pf-accent-soft);
   color: var(--pf-accent);
 }
 
 .pf-text-link {
-  color: var(--pf-muted);
-  font-size: 14px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  color: var(--pf-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 150ms ease-out;
 }
 
 .pf-text-link:hover {
-  text-decoration: underline;
+  color: var(--pf-ink);
 }
 
 .pf-text-link.pf-accent {
   color: var(--pf-accent);
+  font-weight: 600;
+}
+
+.pf-text-link.pf-accent:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 :where(.pf-root) button:focus-visible,
 :where(.pf-root) a:focus-visible,
-:where(.pf-root) select:focus-visible,
-:where(.pf-root) input:focus-visible:not(.pf-field) {
-  outline: 2px solid var(--pf-accent);
+:where(.pf-root) label:has(> input[type="file"]:focus-visible) {
+  outline: 2px solid var(--pf-ring);
   outline-offset: 2px;
+}
+
+/* ---------- Choices ---------- */
+
+/* Radio buttons and checkboxes in Potok's primary, as its daisyUI ones look. */
+.pf-root input[type="radio"]:not(.sr-only),
+.pf-root input[type="checkbox"]:not(.sr-only):not([role="switch"]) {
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1.5px solid color-mix(in oklab, var(--color-base-content) 38%, transparent);
+  background: var(--pf-surface);
+  cursor: pointer;
+  transition: border-color 150ms ease-out, background 150ms ease-out, box-shadow 150ms ease-out;
+}
+
+.pf-root input[type="radio"]:not(.sr-only) {
+  border-radius: 999px;
+}
+
+.pf-root input[type="checkbox"]:not(.sr-only):not([role="switch"]) {
+  border-radius: 6px;
+}
+
+.pf-root input[type="radio"]:not(.sr-only)::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--pf-accent);
+  transform: scale(0);
+  transition: transform 120ms ease-out;
+}
+
+.pf-root input[type="checkbox"]:not(.sr-only):not([role="switch"])::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background: var(--pf-on-accent);
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transform: scale(0);
+  transition: transform 120ms ease-out;
+}
+
+.pf-root input[type="radio"]:not(.sr-only):checked {
+  border-color: var(--pf-accent);
+}
+
+.pf-root input[type="checkbox"]:not(.sr-only):not([role="switch"]):checked {
+  border-color: var(--pf-accent);
+  background: var(--pf-accent);
+}
+
+.pf-root input[type="radio"]:not(.sr-only):checked::before,
+.pf-root input[type="checkbox"]:not(.sr-only):not([role="switch"]):checked::before {
+  transform: scale(1);
+}
+
+.pf-root input[type="radio"]:not(.sr-only):hover:not(:disabled),
+.pf-root input[type="checkbox"]:not(.sr-only):not([role="switch"]):hover:not(:disabled) {
+  border-color: var(--pf-accent);
+}
+
+.pf-root input[type="radio"]:not(.sr-only):focus-visible,
+.pf-root input[type="checkbox"]:not(.sr-only):not([role="switch"]):focus-visible {
+  outline: none;
+  box-shadow: var(--pf-focus);
+}
+
+.pf-root input[type="radio"]:disabled,
+.pf-root input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ---------- Switch ---------- */
@@ -702,43 +1131,42 @@ textarea.pf-answer-field {
 
 .pf-switch-track {
   position: relative;
-  width: 36px;
-  height: 14px;
-  border-radius: 7px;
-  background: var(--pf-line);
-  transition: background 150ms;
   flex: none;
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-base-content) 20%, transparent);
+  transition: background 150ms ease-out;
 }
 
 .pf-switch-thumb {
   position: absolute;
-  top: -3px;
-  left: -2px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--pf-surface);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
-  transition: transform 150ms, background 150ms;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  transition: transform 150ms ease-out, background 150ms ease-out;
 }
 
 .pf-switch input:checked + .pf-switch-track {
-  background: color-mix(in oklab, var(--pf-accent) 45%, transparent);
-}
-
-.pf-switch input:checked + .pf-switch-track .pf-switch-thumb {
-  transform: translateX(20px);
   background: var(--pf-accent);
 }
 
+.pf-switch input:checked + .pf-switch-track .pf-switch-thumb {
+  transform: translateX(16px);
+  background: var(--pf-on-accent);
+}
+
 .pf-switch input:focus-visible + .pf-switch-track {
-  outline: 2px solid var(--pf-accent);
-  outline-offset: 4px;
+  box-shadow: var(--pf-focus);
 }
 
 .pf-switch-disabled {
   opacity: 0.5;
-  cursor: default;
+  cursor: not-allowed;
 }
 
 .pf-setting-control .pf-switch-label {
@@ -758,16 +1186,17 @@ textarea.pf-answer-field {
 
 .pf-menu {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   z-index: 40;
   min-width: 240px;
   max-height: 60vh;
   overflow-y: auto;
-  padding: 6px 0;
+  padding: 6px;
   background: var(--pf-surface);
   border: 1px solid var(--pf-line);
-  border-radius: 6px;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 0.18);
+  border-radius: var(--pf-radius-box);
+  box-shadow: var(--pf-shadow-xl);
+  animation: pf-pop 120ms ease-out;
 }
 
 .pf-menu-right {
@@ -781,56 +1210,119 @@ textarea.pf-answer-field {
 .pf-menu-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  padding: 9px 16px;
+  padding: 8px 12px;
+  border-radius: var(--pf-radius-field);
   text-align: left;
   font-size: 14px;
+  cursor: pointer;
+  transition: background 120ms ease-out;
 }
 
 .pf-menu-item:hover {
   background: var(--pf-hover);
 }
 
+.pf-menu-item[aria-checked="true"] .pf-menu-check {
+  color: var(--pf-accent);
+}
+
 .pf-menu-item-danger {
   color: var(--pf-error);
+}
+
+.pf-menu-item-danger:hover {
+  background: color-mix(in oklab, var(--pf-error) 10%, transparent);
 }
 
 .pf-menu-check {
   display: inline-flex;
   width: 16px;
+  color: var(--pf-muted);
 }
 
 .pf-backdrop {
   position: fixed;
   inset: 0;
   z-index: 50;
-  display: grid;
-  place-items: center;
-  padding: 16px;
-  background: rgb(0 0 0 / 0.42);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.3);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: pf-fade 150ms ease-out;
+}
+
+[data-theme="dark"] .pf-backdrop {
+  background: rgb(0 0 0 / 0.6);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .pf-backdrop {
+    background: rgb(0 0 0 / 0.6);
+  }
 }
 
 .pf-dialog {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 560px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 24px;
+  max-height: 85vh;
+  overflow: hidden;
   background: var(--pf-surface);
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgb(0 0 0 / 0.3);
+  color: var(--pf-ink);
+  border: 1px solid var(--pf-line);
+  border-bottom: 0;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  animation: pf-sheet 200ms ease-out;
+}
+
+@media (min-width: 640px) {
+  .pf-backdrop {
+    align-items: center;
+    padding: 16px;
+  }
+
+  .pf-dialog {
+    max-width: 32rem;
+    border-bottom: 1px solid var(--pf-line);
+    border-radius: 24px;
+    animation: pf-pop 150ms ease-out;
+  }
+}
+
+.pf-dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 16px 14px 20px;
+  border-bottom: 1px solid var(--pf-line);
 }
 
 .pf-dialog-title {
-  font-size: 20px;
-  margin-bottom: 12px;
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .pf-dialog-body {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 20px;
+  font-size: 14px;
+}
+
+.pf-dialog-body:empty {
+  display: none;
 }
 
 .pf-dialog-actions {
@@ -838,63 +1330,9 @@ textarea.pf-answer-field {
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 20px;
-}
-
-.pf-theme-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 45;
-  width: min(340px, 100%);
-  overflow-y: auto;
-  padding: 16px 20px 32px;
-  background: var(--pf-surface);
-  border-left: 1px solid var(--pf-line);
-  box-shadow: -4px 0 16px rgb(0 0 0 / 0.12);
-}
-
-.pf-theme-panel h3 {
-  margin: 20px 0 8px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.pf-theme-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pf-theme-head h2 {
-  flex: 1;
-  font-size: 18px;
-}
-
-.pf-theme-header img {
-  width: 100%;
-  border-radius: 6px;
-}
-
-.pf-swatches {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.pf-swatch {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  color: #fff;
-  border: 2px solid transparent;
-}
-
-.pf-swatch-on {
-  border-color: var(--pf-ink);
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--pf-line);
+  background: color-mix(in oklab, var(--color-base-200) 40%, var(--pf-surface));
 }
 
 .pf-chips {
@@ -907,21 +1345,31 @@ textarea.pf-answer-field {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
-  border: 1px solid var(--pf-line);
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--color-base-300);
   border-radius: 999px;
-  font-size: 14px;
-  transition: background 150ms, border-color 150ms;
+  background: var(--pf-surface);
+  color: var(--pf-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out, transform 150ms ease-out;
 }
 
 .pf-chip:hover {
-  background: var(--pf-hover);
+  color: var(--pf-ink);
 }
 
-.pf-chip-on {
-  border-color: var(--pf-accent);
+.pf-chip:active {
+  transform: scale(0.95);
+}
+
+.pf-chip-on,
+.pf-chip-on:hover {
+  border-color: var(--pf-accent-line);
   background: var(--pf-accent-soft);
-  color: var(--pf-ink);
+  color: var(--pf-accent);
 }
 
 .pf-toast {
@@ -929,44 +1377,95 @@ textarea.pf-answer-field {
   left: 50%;
   bottom: 24px;
   z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   transform: translateX(-50%);
-  max-width: calc(100% - 32px);
-  padding: 12px 20px;
-  border-radius: 6px;
-  background: #323232;
-  color: #fff;
+  max-width: min(26rem, calc(100% - 32px));
+  padding: 8px 16px 8px 8px;
+  border: 1px solid var(--pf-line);
+  border-radius: var(--pf-radius-box);
+  background: color-mix(in oklab, var(--pf-surface) 95%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--pf-ink);
   font-size: 14px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.3);
+  box-shadow: var(--pf-shadow-xl);
+  animation: pf-rise 200ms ease-out;
+}
+
+.pf-toast-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--pf-accent-soft);
+  color: var(--pf-accent);
 }
 
 .pf-notice {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  background: var(--pf-surface);
+  padding: 12px 14px;
   border: 1px solid var(--pf-line);
+  border-radius: var(--pf-radius-box);
+  background: color-mix(in oklab, var(--pf-surface) 85%, transparent);
+  color: var(--pf-soft-ink);
   font-size: 14px;
+  line-height: 1.45;
+}
+
+.pf-notice > span:last-child {
+  padding-top: 3px;
+}
+
+.pf-notice-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--pf-accent-soft);
+  color: var(--pf-accent);
 }
 
 .pf-notice-warning {
-  border-color: color-mix(in oklab, var(--color-warning) 60%, transparent);
-  background: color-mix(in oklab, var(--color-warning) 12%, var(--pf-surface));
+  border-color: color-mix(in oklab, var(--pf-warn) 40%, transparent);
+  background: color-mix(in oklab, var(--pf-warn) 8%, var(--pf-surface));
+}
+
+.pf-notice-warning .pf-notice-icon {
+  background: color-mix(in oklab, var(--pf-warn) 16%, transparent);
+  color: var(--pf-warn-ink);
 }
 
 /* ---------- Editor ---------- */
 
 .pf-toolbar {
   position: sticky;
-  top: 120px;
+  top: 132px;
   display: flex;
   flex-direction: column;
-  padding: 4px;
+  gap: 2px;
+  padding: 6px;
   background: var(--pf-surface);
   border: 1px solid var(--pf-line);
-  border-radius: 8px;
-  box-shadow: var(--pf-shadow);
+  border-radius: 999px;
+  box-shadow: var(--pf-shadow-md);
+}
+
+.pf-toolbar .pf-icon-button {
+  width: 40px;
+  height: 40px;
+}
+
+.pf-toolbar .pf-icon-button:hover:not(:disabled) {
+  background: var(--pf-accent-soft);
+  color: var(--pf-accent);
 }
 
 @media (max-width: 900px) {
@@ -974,10 +1473,14 @@ textarea.pf-answer-field {
     position: fixed;
     top: auto;
     left: 50%;
-    bottom: 12px;
+    bottom: calc(14px + env(safe-area-inset-bottom));
     z-index: 25;
     flex-direction: row;
     transform: translateX(-50%);
+    background: color-mix(in oklab, var(--pf-surface) 94%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: var(--pf-shadow-xl);
   }
 }
 
@@ -986,11 +1489,24 @@ textarea.pf-answer-field {
   align-items: center;
   gap: 8px;
   min-width: 220px;
-  padding: 12px;
-  border: 1px solid var(--pf-line);
-  border-radius: 4px;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--pf-field-line);
+  border-radius: var(--pf-radius-field);
+  background: var(--pf-surface);
   font-size: 14px;
+  font-weight: 500;
   text-align: left;
+  cursor: pointer;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+
+.pf-kind-button:hover {
+  border-color: var(--pf-field-hover);
+}
+
+.pf-kind-button > svg:first-child {
+  color: var(--pf-accent);
 }
 
 .pf-kind-button span {
@@ -998,6 +1514,10 @@ textarea.pf-answer-field {
 }
 
 @media (max-width: 640px) {
+  .pf-main {
+    padding: 12px 12px 112px;
+  }
+
   .pf-question-head {
     flex-wrap: wrap;
   }
@@ -1011,32 +1531,43 @@ textarea.pf-answer-field {
   }
 
   .pf-card {
-    padding: 18px 16px;
+    padding: 16px;
+  }
+
+  .pf-header-image {
+    margin: -16px -16px 14px;
   }
 
   .pf-answer-field {
     max-width: 100%;
   }
+
+  .pf-form-title,
+  .pf-form-title-field {
+    font-size: 22px;
+  }
 }
 
 .pf-question-body {
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
 .pf-placeholder-line {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  width: 50%;
-  min-width: 220px;
-  padding: 8px 2px;
-  border-bottom: 1px dotted var(--pf-line);
-  color: var(--pf-muted);
+  width: min(100%, 22rem);
+  padding: 9px 12px;
+  border: 1px dashed var(--pf-field-line);
+  border-radius: var(--pf-radius-field);
+  color: var(--pf-faint);
   font-size: 14px;
 }
 
 .pf-placeholder-long {
-  width: 80%;
+  width: min(100%, 34rem);
+  min-height: 64px;
+  align-items: flex-start;
 }
 
 .pf-options {
@@ -1054,27 +1585,34 @@ textarea.pf-answer-field {
 .pf-option-handle {
   display: inline-flex;
   width: 16px;
-  color: var(--pf-muted);
+  color: var(--pf-faint);
   cursor: grab;
   opacity: 0;
   touch-action: none;
+  transition: opacity 120ms ease-out;
 }
 
 .pf-option-row:hover .pf-option-handle,
 .pf-option-row:focus-within .pf-option-handle {
-  opacity: 0.7;
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .pf-option-handle {
+    opacity: 0.8;
+  }
 }
 
 .pf-option-mark {
   flex: none;
   width: 18px;
   height: 18px;
-  border: 2px solid var(--pf-muted);
-  border-radius: 50%;
+  border: 1.5px solid color-mix(in oklab, var(--color-base-content) 35%, transparent);
+  border-radius: 999px;
 }
 
 .pf-option-square {
-  border-radius: 3px;
+  border-radius: 5px;
 }
 
 .pf-option-number {
@@ -1082,6 +1620,7 @@ textarea.pf-answer-field {
   min-width: 18px;
   color: var(--pf-muted);
   font-size: 14px;
+  font-variant-numeric: tabular-nums;
 }
 
 .pf-option-body {
@@ -1091,17 +1630,31 @@ textarea.pf-answer-field {
 
 .pf-option-input {
   flex: 1;
+  min-height: 36px;
+  padding: 6px 10px;
 }
 
 .pf-option-other {
   flex: 1;
-  color: var(--pf-muted);
-  padding: 8px 2px;
-  border-bottom: 1px dotted var(--pf-line);
+  padding: 7px 10px;
+  border: 1px dashed var(--pf-field-line);
+  border-radius: var(--pf-radius-field);
+  color: var(--pf-faint);
+  font-size: 14px;
 }
 
 .pf-option-add {
+  gap: 8px;
   font-size: 14px;
+}
+
+.pf-option-add .pf-text-link {
+  padding: 6px 10px;
+  border-radius: var(--pf-radius-field);
+}
+
+.pf-option-add .pf-text-link:hover {
+  background: var(--pf-hover);
 }
 
 .pf-option-picture img {
@@ -1110,16 +1663,30 @@ textarea.pf-answer-field {
 
 .pf-lines {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 2px;
-  flex: 1;
   min-width: 200px;
 }
 
 .pf-lines-title {
-  font-size: 14px;
-  font-weight: 600;
   margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pf-muted);
+}
+
+.pf-lines > .pf-text-link {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 6px 10px;
+  border-radius: var(--pf-radius-field);
+}
+
+.pf-lines > .pf-text-link:hover {
+  background: var(--pf-hover);
 }
 
 .pf-grid-editor {
@@ -1139,14 +1706,14 @@ textarea.pf-answer-field {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 4px 12px;
+  gap: 6px 12px;
   margin-top: 12px;
   max-width: 360px;
 }
 
 .pf-rating-preview {
   display: inline-flex;
-  color: var(--pf-line);
+  color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
 }
 
 .pf-file-editor {
@@ -1158,7 +1725,7 @@ textarea.pf-answer-field {
 .pf-type-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 6px 16px;
+  gap: 8px 16px;
 }
 
 .pf-check {
@@ -1183,7 +1750,10 @@ textarea.pf-answer-field {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: var(--pf-radius-field);
+  background: var(--pf-raised);
 }
 
 .pf-validation-error-field {
@@ -1196,31 +1766,37 @@ textarea.pf-answer-field {
   flex-wrap: wrap;
   align-items: center;
   gap: 2px;
-  margin-top: 20px;
-  padding-top: 8px;
+  margin-top: 18px;
+  padding-top: 10px;
   border-top: 1px solid var(--pf-line);
 }
 
 .pf-card-footer .pf-switch {
   gap: 8px;
+  padding: 0 4px;
 }
 
 .pf-footer-divider {
   width: 1px;
-  height: 32px;
-  margin: 0 10px;
+  height: 24px;
+  margin: 0 8px;
   background: var(--pf-line);
 }
 
 .pf-key-button {
-  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.pf-key-button:hover {
+  background: var(--pf-accent-soft);
+  text-decoration: none !important;
 }
 
 .pf-question-preview {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  cursor: pointer;
 }
 
 .pf-preview-options {
@@ -1238,9 +1814,15 @@ textarea.pf-answer-field {
 
 .pf-preview-kind {
   display: inline-flex;
+  align-self: flex-start;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--pf-raised);
+  font-size: 12px;
+  font-weight: 600;
   color: var(--pf-muted);
 }
 
@@ -1250,14 +1832,25 @@ textarea.pf-answer-field {
   gap: 8px;
 }
 
+.pf-item-head > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
 .pf-after-section {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  padding: 6px 4px;
+  padding: 4px 6px;
   color: var(--pf-muted);
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pf-after-section .pf-select {
+  height: 34px;
+  font-size: 13px;
 }
 
 .pf-picture {
@@ -1268,15 +1861,15 @@ textarea.pf-answer-field {
 .pf-picture img {
   max-width: 100%;
   max-height: 420px;
-  border-radius: 4px;
+  border-radius: var(--pf-radius-field);
 }
 
 .pf-picture-remove {
   position: absolute;
-  top: 4px;
-  left: 4px;
-  background: var(--pf-surface);
-  box-shadow: var(--pf-shadow);
+  top: 6px;
+  left: 6px;
+  background: color-mix(in oklab, var(--pf-surface) 92%, transparent);
+  box-shadow: var(--pf-shadow-md);
 }
 
 .pf-picture-dialog {
@@ -1291,15 +1884,16 @@ textarea.pf-answer-field {
   align-items: center;
   gap: 8px;
   padding: 28px 16px;
-  border: 2px dashed var(--pf-line);
-  border-radius: 8px;
+  border: 1.5px dashed var(--pf-field-line);
+  border-radius: var(--pf-radius-box);
   color: var(--pf-muted);
   cursor: pointer;
-  transition: border-color 150ms, color 150ms;
+  transition: border-color 150ms ease-out, color 150ms ease-out, background 150ms ease-out;
 }
 
 .pf-upload-drop:hover {
   border-color: var(--pf-accent);
+  background: var(--pf-accent-softer);
   color: var(--pf-accent);
 }
 
@@ -1307,15 +1901,20 @@ textarea.pf-answer-field {
   position: relative;
   display: block;
   margin-top: 8px;
-  border-radius: 6px;
+  border-radius: var(--pf-radius-field);
   overflow: hidden;
   background: #000;
 }
 
 .pf-video-card img {
+  display: block;
   width: 100%;
   opacity: 0.85;
-  display: block;
+  transition: opacity 150ms ease-out;
+}
+
+.pf-video-card:hover img {
+  opacity: 1;
 }
 
 .pf-video-play {
@@ -1325,11 +1924,13 @@ textarea.pf-answer-field {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
+  height: 34px;
+  padding: 0 14px;
   border-radius: 999px;
   background: rgb(0 0 0 / 0.7);
   color: #fff;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .pf-key {
@@ -1365,13 +1966,29 @@ textarea.pf-answer-field {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 10px;
-  border-radius: 4px;
+  padding: 9px 12px;
+  border-radius: var(--pf-radius-field);
   cursor: pointer;
+  transition: background 120ms ease-out;
 }
 
-.pf-key-option-on {
-  background: color-mix(in oklab, var(--pf-good) 14%, transparent);
+.pf-key-option:hover {
+  background: var(--pf-hover);
+}
+
+.pf-key-option-on,
+.pf-key-option-on:hover {
+  background: color-mix(in oklab, var(--pf-good) 12%, transparent);
+}
+
+.pf-key-option-on svg {
+  color: var(--pf-good-ink);
+}
+
+.pf-key-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .pf-key-feedback {
@@ -1381,9 +1998,9 @@ textarea.pf-answer-field {
 }
 
 .pf-settings-title {
-  font-size: 18px;
-  font-weight: 500;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .pf-settings-body {
@@ -1397,6 +2014,7 @@ textarea.pf-answer-field {
   gap: 16px;
   padding: 14px 0;
   border-top: 1px solid var(--pf-line);
+  font-size: 14px;
 }
 
 .pf-setting:first-child {
@@ -1406,6 +2024,11 @@ textarea.pf-answer-field {
 .pf-setting-text {
   flex: 1;
   min-width: 0;
+}
+
+.pf-setting-text > div:first-child,
+.pf-setting-stack > div:first-child {
+  font-weight: 500;
 }
 
 .pf-setting-stack {
@@ -1422,7 +2045,7 @@ textarea.pf-answer-field {
 }
 
 .pf-question-answer {
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
 .pf-answers {
@@ -1436,39 +2059,46 @@ textarea.pf-answer-field {
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  min-height: 40px;
+  min-height: 44px;
+  margin: 0 -10px;
+  padding: 6px 10px;
+  border-radius: var(--pf-radius-field);
   cursor: pointer;
+  transition: background 120ms ease-out;
 }
 
-.pf-root input[type="radio"],
-.pf-root input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  accent-color: var(--pf-accent);
-  flex: none;
-  cursor: pointer;
+.pf-answer:hover {
+  background: var(--pf-hover);
+}
+
+.pf-answer:has(> input:checked) {
+  background: var(--pf-accent-softer);
 }
 
 .pf-answer-text {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .pf-answer-other .pf-other-field {
   flex: 1;
   min-width: 160px;
+  min-height: 36px;
+  padding: 6px 10px;
 }
 
 .pf-clear-choice {
   align-self: flex-end;
+  margin-top: 4px;
 }
 
 .pf-problem {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 14px;
+  margin-top: 12px;
   color: var(--pf-error);
   font-size: 13px;
+  font-weight: 500;
 }
 
 .pf-scale {
@@ -1480,8 +2110,9 @@ textarea.pf-answer-field {
 }
 
 .pf-scale-label {
-  font-size: 14px;
   padding-bottom: 2px;
+  font-size: 13px;
+  color: var(--pf-muted);
 }
 
 .pf-scale-points {
@@ -1493,10 +2124,18 @@ textarea.pf-answer-field {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  min-width: 38px;
+  gap: 8px;
+  min-width: 40px;
+  padding: 6px 2px;
+  border-radius: var(--pf-radius-field);
   font-size: 14px;
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
+  transition: background 120ms ease-out;
+}
+
+.pf-scale-point:hover {
+  background: var(--pf-hover);
 }
 
 .pf-rating {
@@ -1509,17 +2148,25 @@ textarea.pf-answer-field {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: var(--pf-line);
+  color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
   cursor: pointer;
-  transition: color 120ms, transform 120ms;
+  transition: color 120ms ease-out, transform 120ms ease-out;
 }
 
 .pf-rating-level:hover {
   transform: scale(1.08);
+  color: color-mix(in oklab, var(--color-primary) 60%, transparent);
 }
 
-.pf-rating-on {
+.pf-rating-on,
+.pf-rating-on:hover {
   color: var(--pf-accent);
+}
+
+.pf-rating-level:has(input:focus-visible) {
+  outline: 2px solid var(--pf-ring);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 .pf-rating-number {
@@ -1545,8 +2192,15 @@ textarea.pf-answer-field {
   font-weight: 400;
 }
 
+.pf-grid-table thead th {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pf-muted);
+}
+
 .pf-grid-table tbody th {
   text-align: left;
+  font-weight: 500;
 }
 
 .pf-grid-table tbody tr {
@@ -1554,11 +2208,11 @@ textarea.pf-answer-field {
 }
 
 .pf-grid-table tbody tr th:first-child {
-  border-radius: 4px 0 0 4px;
+  border-radius: var(--pf-radius-field) 0 0 var(--pf-radius-field);
 }
 
 .pf-grid-table tbody tr td:last-child {
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 var(--pf-radius-field) var(--pf-radius-field) 0;
 }
 
 .pf-files {
@@ -1574,14 +2228,29 @@ textarea.pf-answer-field {
   align-items: center;
   gap: 8px;
   max-width: 100%;
-  padding: 8px 12px;
+  min-height: 40px;
+  padding: 6px 6px 6px 12px;
   border: 1px solid var(--pf-line);
-  border-radius: 6px;
+  border-radius: var(--pf-radius-field);
+  background: var(--pf-surface);
   font-size: 14px;
 }
 
+.pf-file-chip > svg:first-child {
+  color: var(--pf-accent);
+}
+
+.pf-file-uploading {
+  padding-right: 12px;
+}
+
+.pf-file-link {
+  transition: background 120ms ease-out, border-color 120ms ease-out;
+}
+
 .pf-file-link:hover {
-  background: var(--pf-hover);
+  border-color: var(--pf-accent-line);
+  background: var(--pf-accent-softer);
 }
 
 .pf-file-denied {
@@ -1599,24 +2268,25 @@ textarea.pf-answer-field {
   display: block;
   flex: 1;
   min-width: 80px;
-  height: 8px;
-  border-radius: 4px;
-  background: var(--pf-line);
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-base-content) 12%, transparent);
   overflow: hidden;
 }
 
 .pf-progress > span {
   display: block;
   height: 100%;
-  border-radius: 4px;
+  border-radius: 999px;
   background: var(--pf-accent);
-  transition: width 200ms;
+  transition: width 200ms ease-out;
 }
 
 .pf-progress-wrap {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 0 4px;
 }
 
 .pf-nav {
@@ -1624,26 +2294,27 @@ textarea.pf-answer-field {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
+  padding: 4px 0;
 }
 
 .pf-after-links {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .pf-footer {
-  padding: 20px 0 8px;
+  padding: 16px 0 8px;
   text-align: center;
   font-size: 12px;
-  color: var(--pf-muted);
+  color: var(--pf-faint);
 }
 
 .pf-score {
   margin-top: 8px;
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .pf-your-answer {
@@ -1655,26 +2326,32 @@ textarea.pf-answer-field {
 
 .pf-verdict {
   display: inline-flex;
+  align-self: flex-start;
   align-items: center;
   gap: 6px;
-  margin-top: 8px;
-  font-size: 13px;
-  font-weight: 500;
+  margin-top: 10px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .pf-verdict-correct {
-  border-left: 4px solid var(--pf-good);
+  border-color: color-mix(in oklab, var(--pf-good) 45%, transparent);
 }
 
 .pf-verdict-correct .pf-verdict {
-  color: var(--pf-good);
+  background: color-mix(in oklab, var(--pf-good) 12%, transparent);
+  color: var(--pf-good-ink);
 }
 
 .pf-verdict-incorrect {
-  border-left: 4px solid var(--pf-error);
+  border-color: color-mix(in oklab, var(--pf-error) 45%, transparent);
 }
 
 .pf-verdict-incorrect .pf-verdict {
+  background: color-mix(in oklab, var(--pf-error) 10%, transparent);
   color: var(--pf-error);
 }
 
@@ -1685,8 +2362,9 @@ textarea.pf-answer-field {
 }
 
 .pf-feedback {
+  padding-left: 10px;
+  border-left: 2px solid var(--pf-line);
   color: var(--pf-muted);
-  font-style: italic;
 }
 
 /* ---------- Responses ---------- */
@@ -1694,57 +2372,68 @@ textarea.pf-answer-field {
 .pf-responses-top {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .pf-responses-count {
-  font-size: 26px;
-  font-weight: 400;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
 }
 
 .pf-responses-head {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .pf-subtabs {
   display: flex;
-  justify-content: center;
-  gap: 4px;
+  gap: 2px;
   padding: 4px;
-  background: var(--pf-surface);
   border: 1px solid var(--pf-line);
-  border-radius: 8px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-base-content) 5%, var(--pf-surface));
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
 .pf-subtab {
   flex: 1;
-  padding: 8px 10px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--pf-muted);
-  transition: background 150ms, color 150ms;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 150ms ease-out, color 150ms ease-out, box-shadow 150ms ease-out;
 }
 
 .pf-subtab:hover {
-  background: var(--pf-hover);
+  color: var(--pf-ink);
 }
 
-.pf-subtab-on {
-  background: var(--pf-accent-soft);
+.pf-subtab-on,
+.pf-subtab-on:hover {
+  background: var(--pf-surface);
   color: var(--pf-ink);
+  box-shadow: var(--pf-shadow-sm);
 }
 
 .pf-arrived {
   align-self: center;
-  padding: 6px 16px;
+  height: 34px;
+  padding: 0 16px;
   border-radius: 999px;
   background: var(--pf-accent);
-  color: #fff;
-  font-size: 14px;
-  box-shadow: var(--pf-shadow);
+  color: var(--pf-on-accent);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--pf-shadow-md);
+  cursor: pointer;
+  animation: pf-pop 150ms ease-out;
 }
 
 .pf-summary-card {
@@ -1755,8 +2444,9 @@ textarea.pf-answer-field {
 
 .pf-chart-title {
   margin-top: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  color: var(--pf-muted);
 }
 
 .pf-bars {
@@ -1771,17 +2461,18 @@ textarea.pf-answer-field {
   align-items: center;
   gap: 12px;
   width: 100%;
-  min-height: 30px;
+  min-height: 32px;
   font-size: 14px;
 }
 
 .pf-bar-button {
   display: block;
   width: 100%;
-  padding: 0 6px;
-  border-radius: 4px;
+  padding: 0 8px;
+  border-radius: var(--pf-radius-field);
   text-align: left;
-  transition: background 120ms;
+  cursor: pointer;
+  transition: background 120ms ease-out;
 }
 
 .pf-bar-button:hover {
@@ -1803,7 +2494,7 @@ textarea.pf-answer-field {
   min-width: 2px;
   border-radius: 0 4px 4px 0;
   background: var(--viz-1);
-  transition: width 300ms;
+  transition: width 300ms ease-out;
 }
 
 .pf-bar-value {
@@ -1849,7 +2540,7 @@ textarea.pf-answer-field {
   min-height: 2px;
   border-radius: 4px 4px 0 0;
   background: var(--viz-1);
-  transition: height 300ms;
+  transition: height 300ms ease-out;
 }
 
 .pf-column-label {
@@ -1860,6 +2551,8 @@ textarea.pf-answer-field {
 .pf-scale-ends {
   display: flex;
   justify-content: space-between;
+  font-size: 13px;
+  color: var(--pf-muted);
 }
 
 .pf-heatmap {
@@ -1870,7 +2563,7 @@ textarea.pf-answer-field {
 
 .pf-heatmap th {
   padding: 6px 10px;
-  font-weight: 400;
+  font-weight: 500;
   text-align: left;
 }
 
@@ -1882,7 +2575,7 @@ textarea.pf-answer-field {
 .pf-heatmap td {
   min-width: 52px;
   padding: 8px;
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--pf-raised);
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -1890,18 +2583,18 @@ textarea.pf-answer-field {
 
 .pf-meter {
   display: inline-block;
+  flex: none;
   width: 120px;
   height: 8px;
-  border-radius: 4px;
+  border-radius: 999px;
   background: var(--viz-track);
   overflow: hidden;
-  flex: none;
 }
 
 .pf-meter-fill {
   display: block;
   height: 100%;
-  border-radius: 4px;
+  border-radius: 999px;
   background: var(--viz-1);
 }
 
@@ -1914,17 +2607,20 @@ textarea.pf-answer-field {
 .pf-stat {
   padding: 12px 14px;
   border: 1px solid var(--pf-line);
-  border-radius: 8px;
+  border-radius: var(--pf-radius-box);
+  background: var(--pf-surface);
 }
 
 .pf-stat-label {
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--pf-muted);
 }
 
 .pf-stat-value {
   font-size: 24px;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .pf-missed {
@@ -1961,8 +2657,8 @@ textarea.pf-answer-field {
 }
 
 .pf-text-answers li {
-  padding: 8px 12px;
-  border-radius: 4px;
+  padding: 9px 12px;
+  border-radius: var(--pf-radius-field);
   background: var(--pf-raised);
   font-size: 14px;
   white-space: pre-wrap;
@@ -1988,7 +2684,8 @@ textarea.pf-answer-field {
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  padding: 8px 14px;
+  padding: 6px 8px 6px 16px;
+  border: 1px solid var(--pf-accent-line);
   border-radius: 999px;
   background: var(--pf-accent-soft);
   font-size: 14px;
@@ -2035,14 +2732,15 @@ textarea.pf-answer-field {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .pf-score-pill {
   padding: 2px 10px;
   border-radius: 999px;
   background: var(--pf-accent-soft);
-  font-weight: 500;
+  color: var(--pf-accent);
+  font-weight: 600;
 }
 
 .pf-individual-answer {
@@ -2064,10 +2762,12 @@ textarea.pf-answer-field {
 }
 
 .pf-pending {
-  font-size: 12px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: color-mix(in oklab, var(--color-warning) 22%, transparent);
+  background: color-mix(in oklab, var(--pf-warn) 16%, transparent);
+  color: var(--pf-warn-ink);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .pf-table-card {
@@ -2093,10 +2793,12 @@ textarea.pf-answer-field {
   z-index: 1;
   max-width: 220px;
   padding: 10px 12px;
-  background: var(--pf-surface);
+  background: color-mix(in oklab, var(--color-base-200) 70%, var(--pf-surface));
   border-bottom: 1px solid var(--pf-line);
   text-align: left;
+  font-size: 12px;
   font-weight: 600;
+  color: var(--pf-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2104,7 +2806,7 @@ textarea.pf-answer-field {
 
 .pf-table td {
   max-width: 260px;
-  padding: 9px 12px;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--pf-line);
   white-space: nowrap;
   overflow: hidden;
@@ -2113,10 +2815,11 @@ textarea.pf-answer-field {
 
 .pf-table-row {
   cursor: pointer;
+  transition: background 120ms ease-out;
 }
 
 .pf-table-row:hover {
-  background: var(--pf-hover);
+  background: var(--pf-accent-softer);
 }
 
 .pf-table-card .pf-pager,
@@ -2130,6 +2833,7 @@ textarea.pf-answer-field {
   align-items: center;
   gap: 4px;
   padding-top: 12px;
+  font-size: 14px;
 }
 
 .pf-pager label {
@@ -2150,7 +2854,7 @@ textarea.pf-answer-field {
   .pf-individual-nav,
   .pf-toolbar,
   .pf-reader-bar,
-  .pf-preview-bar {
+  .pf-fill-bar {
     display: none !important;
   }
 

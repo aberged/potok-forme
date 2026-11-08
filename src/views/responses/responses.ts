@@ -45,6 +45,7 @@ function headerCard() {
 
   return html`<section class="pf-card pf-responses-head" id="responses-head">
     <div class="pf-responses-top">
+      <span class="pf-tile pf-tile-small" aria-hidden="true">${icon('summary')}</span>
       <h2 class="pf-responses-count">${t.plural('responses', total)}</h2>
       <span class="flex-1"></span>
       ${canRead()

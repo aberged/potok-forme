@@ -6,12 +6,14 @@ import { html, nothing, type TemplateResult } from 'lit-html';
 import { COLLECTION } from '../../model/config';
 import { answerText, readResponse, shuffled } from '../../model/answers';
 import { FIRST_SECTION, sections, type FormSection, type Item, type Question } from '../../model/form';
-import { clearForm, goBack, goNext, startFilling, submit, upcoming } from '../../store/fill';
-import { setView } from '../../store/responses';
+import { stopFilling } from '../../store/editor';
+import { clearForm, goBack, goNext, previewReason, startFilling, submit, upcoming } from '../../store/fill';
+import { loadView, setView } from '../../store/responses';
 import { state, update } from '../../store/state';
 import type { PotokCaps, PotokCollectionValue, PotokManaged } from '../../potok';
 import { button, confirm, notice, richText, ui } from '../common';
 import { icon } from '../icons';
+import { headerPicture } from '../editor/editor';
 import { pictureView, videoCard } from '../editor/pictures';
 import { answerInput } from './inputs';
 import { dateText } from '../../store/responses';
@@ -26,6 +28,7 @@ function headerCard(showAccount: boolean) {
   const anonymous = state.form.settings.anonymous;
 
   return html`<section class="pf-card pf-header-card" id="form-header">
+    ${headerPicture()}
     <h1 class="pf-form-title">${state.form.title || t('untitledForm')}</h1>
     ${richText(state.form.description, 'pf-form-description')}
     ${showAccount
@@ -112,7 +115,7 @@ function blockedReason(c: PotokCaps | null): string | null {
   const t = ui.t;
   const settings = state.form.settings;
 
-  if (state.preview) return null;
+  if (state.filling) return null;
   if (!settings.published) return t('notPublished');
   if (!state.reply?.viewer.signed_in) return t('signIn');
   if (!c) return t('membersOnly');
@@ -131,7 +134,7 @@ function blockedReason(c: PotokCaps | null): string | null {
 function yourResponses(c: PotokCaps | null) {
   const t = ui.t;
   const latest = state.mine[0];
-  if (!latest) return nothing;
+  if (!latest || !(c?.edit_own || latest.managed)) return nothing;
 
   return html`<div class="pf-after-links">
     ${c?.edit_own ? button(t('editResponse'), () => startFilling(latest), { id: 'edit-response', kind: 'text' }) : nothing}
@@ -147,21 +150,32 @@ function confirmationCard(c: PotokCaps | null) {
   const t = ui.t;
   const settings = state.form.settings;
   const sent = state.fill.sent;
-  const canAgain = !settings.once && settings.anotherLink && !state.preview;
+  const previewed = state.fill.previewed;
+  const canAgain = !settings.once && settings.anotherLink && !previewed;
+  const editor = state.reply?.manage === true;
 
   return html`<section class="pf-card pf-header-card pf-message-card" id="form-sent">
+    ${headerPicture()}
+    <span class="pf-sent-mark" aria-hidden="true">${icon(previewed ? 'eye' : 'check', 'size-6')}</span>
     <h1 class="pf-form-title">${state.form.title || t('untitledForm')}</h1>
     <p>${settings.confirmation || t('confirmationDefault')}</p>
-    ${state.preview ? html`<p class="pf-muted">${t('previewNote')}</p>` : nothing}
+    ${previewed ? html`<p class="pf-muted pf-small">${t('previewNote')}</p>` : nothing}
     <div class="pf-after-links">
-      ${canAgain ? button(t('anotherResponse'), () => startFilling(), { id: 'another-response' }) : nothing}
-      ${c?.edit_own && sent ? button(t('editResponse'), () => startFilling(sent), { id: 'edit-response' }) : nothing}
-      ${sent?.managed ? button(t('viewScore'), () => update((s) => (s.fill.showScore = true)), { id: 'view-score' }) : nothing}
-      ${c?.summary && !state.reply?.manage
+      ${previewed ? button(t('startOver'), () => startFilling(), { kind: 'secondary', icon: 'undo', id: 'start-over' }) : nothing}
+      ${canAgain ? button(t('anotherResponse'), () => startFilling(), { kind: 'secondary', id: 'another-response' }) : nothing}
+      ${c?.edit_own && sent && !previewed ? button(t('editResponse'), () => startFilling(sent), { kind: 'secondary', icon: 'fill', id: 'edit-response' }) : nothing}
+      ${sent?.managed && !previewed ? button(t('viewScore'), () => update((s) => (s.fill.showScore = true)), { kind: 'secondary', icon: 'quiz', id: 'view-score' }) : nothing}
+      ${c?.summary && !editor
         ? button(t('viewSummary'), () => {
             update((s) => (s.readerScreen = 'responses'));
             setView('summary');
-          }, { id: 'view-summary' })
+          }, { kind: 'soft', icon: 'summary', id: 'view-summary' })
+        : nothing}
+      ${editor
+        ? button(t('viewResponses'), () => {
+            stopFilling('responses');
+            void loadView();
+          }, { kind: 'soft', icon: 'summary', id: 'editor-responses' })
         : nothing}
     </div>
   </section>`;
@@ -228,7 +242,7 @@ export function respondView() {
   if (fill.done) return html`<div class="pf-column">${confirmationCard(c)}${footer()}</div>`;
 
   const reason = blockedReason(c);
-  const already = !state.preview && c?.once && c.written && !fill.editing;
+  const already = !state.filling && c?.once && c.written && !fill.editing;
 
   if (reason || already) {
     return html`<div class="pf-column">
@@ -252,11 +266,12 @@ export function respondView() {
   const section = all[index];
   const next = upcoming();
 
+  const preview = previewReason();
+
   return html`<div class="pf-column">
-    ${state.preview ? notice(t('previewNote')) : nothing}
-    ${state.form.theme.header ? html`<div class="pf-header-image"><img src=${state.form.theme.header.url} alt="" /></div>` : nothing}
+    ${preview ? notice(t(preview), 'info', 'fill-preview-note') : nothing}
     ${headerCard(true)}
-    ${!state.preview && state.mine.length > 0 && !fill.editing ? yourResponses(c) : nothing}
+    ${!preview && state.mine.length > 0 && !fill.editing ? yourResponses(c) : nothing}
     ${section.id !== FIRST_SECTION
       ? html`<section class="pf-card pf-section-card">
           <h2 class="pf-section-title">${section.title || t('untitledSection')}</h2>
@@ -274,7 +289,7 @@ export function respondView() {
       <span class="flex-1"></span>
       <button type="button" class="pf-text-link" id="form-clear" @click=${() => confirm(t('clearConfirm'), clearForm)}>${t('clearForm')}</button>
     </div>
-    ${!state.preview && !settings.anonymous && state.reply?.viewer.signed_in ? html`<p class="pf-muted pf-small pf-center">${t('draftKept')}</p>` : nothing}
+    ${!preview && !settings.anonymous && state.reply?.viewer.signed_in ? html`<p class="pf-muted pf-small pf-center">${t('draftKept')}</p>` : nothing}
     ${footer()}
   </div>`;
 }

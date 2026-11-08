@@ -45,8 +45,8 @@ describe('normalizeForm', () => {
     expect((form.items[0] as Question).kind).toBe('short');
     expect((form.items[1] as Question).picture).toBeNull();
     expect((form.items[1] as Question).options[0]).toMatchObject({ id: 'o1', label: 'Da' });
-    expect(form.theme.color).toBe('#673ab7');
-    expect(form.theme.font).toBe('playful');
+    // The colors and fonts of early forms go: a form looks like Potok.
+    expect(form.theme).toEqual({ header: null });
   });
 
   it('takes Potok signed picture addresses and https ones', () => {

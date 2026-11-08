@@ -13,7 +13,6 @@ export type SaveState = 'saved' | 'dirty' | 'saving' | 'error' | 'conflict';
 
 export type Dialog =
   | { kind: 'publish' }
-  | { kind: 'theme' }
   | { kind: 'confirm'; text: string; action: () => void; danger?: boolean }
   | { kind: 'picture'; target: PictureTarget }
   | { kind: 'video' }
@@ -41,6 +40,8 @@ export type FillState = {
   /** The value just sent. */
   sent: PotokCollectionValue | null;
   done: boolean;
+  /** An editor's walk through the form ended, and nothing was sent. */
+  previewed: boolean;
   /** Showing the score of `sent` or `editing`. */
   showScore: boolean;
   seed: string;
@@ -91,7 +92,8 @@ export type State = {
   tab: EditorTab;
   /** For viewers who are not editors: the form or the responses. */
   readerScreen: 'form' | 'responses';
-  preview: boolean;
+  /** An editor going through the form as those who fill it in see it. */
+  filling: boolean;
   active: string | null;
   roles: PotokRole[] | null;
   toast: string | null;
@@ -123,6 +125,7 @@ export function emptyFill(seed = String(Date.now())): FillState {
     editing: null,
     sent: null,
     done: false,
+    previewed: false,
     showScore: false,
     seed,
   };
@@ -162,7 +165,7 @@ export const state: State = {
   future: [],
   tab: 'questions',
   readerScreen: 'form',
-  preview: false,
+  filling: false,
   active: null,
   roles: null,
   toast: null,

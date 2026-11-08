@@ -1,13 +1,12 @@
-// The editor's dialogs: publishing, the theme, a question's answer key, and a
+// The editor's dialogs: publishing, a question's answer key, and a
 // confirmation before something that cannot be undone.
 
 import { html, nothing } from 'lit-html';
-import { emptyKey, THEME_COLORS, type AnswerKey, type Background, type Font, type Question } from '../../model/form';
-import { editQuestion, editTheme, findQuestion, setPublished } from '../../store/editor';
-import { state, update } from '../../store/state';
+import { emptyKey, type AnswerKey, type Question } from '../../model/form';
+import { editQuestion, editSettings, findQuestion, setPublished } from '../../store/editor';
+import { state } from '../../store/state';
 import { button, closeDialog, dialog, rolePicker, ui, underlined } from '../common';
 import { icon } from '../icons';
-import { editSettings } from '../../store/editor';
 
 export function publishDialog() {
   const t = ui.t;
@@ -38,78 +37,10 @@ export function publishDialog() {
         : button(t('publish'), () => {
             setPublished(true);
             closeDialog();
-          }, { kind: 'primary', id: 'publish-confirm' })}`,
+          }, { kind: 'primary', id: 'publish-confirm', icon: 'send' })}`,
     'pf-publish',
+    settings.published ? 'check' : 'send',
   );
-}
-
-const FONTS: { value: Font; label: 'fontBasic' | 'fontDecorative' | 'fontFormal' | 'fontPlayful' }[] = [
-  { value: 'basic', label: 'fontBasic' },
-  { value: 'decorative', label: 'fontDecorative' },
-  { value: 'formal', label: 'fontFormal' },
-  { value: 'playful', label: 'fontPlayful' },
-];
-
-const BACKGROUNDS: { value: Background; label: 'bgLight' | 'bgMedium' | 'bgDark' | 'bgPlain' }[] = [
-  { value: 'light', label: 'bgLight' },
-  { value: 'medium', label: 'bgMedium' },
-  { value: 'dark', label: 'bgDark' },
-  { value: 'plain', label: 'bgPlain' },
-];
-
-export function themePanel() {
-  const t = ui.t;
-  const theme = state.form.theme;
-
-  return html`<aside class="pf-theme-panel" id="theme-panel" aria-label=${t('theme')}>
-    <div class="pf-theme-head">
-      ${icon('palette')}<h2>${t('theme')}</h2>
-      <button type="button" class="pf-icon-button" aria-label=${t('close')} @click=${closeDialog}>${icon('close')}</button>
-    </div>
-    <h3>${t('headerImage')}</h3>
-    ${theme.header
-      ? html`<div class="pf-theme-header"><img src=${theme.header.url} alt="" />
-          ${button(t('removePicture'), () => editTheme((th) => (th.header = null)))}</div>`
-      : button(t('addPicture'), () => update((s) => (s.dialog = { kind: 'picture', target: { kind: 'header' } })), { icon: 'image', id: 'theme-header' })}
-    <h3>${t('color')}</h3>
-    <div class="pf-swatches" role="radiogroup" aria-label=${t('color')}>
-      ${THEME_COLORS.map(
-        (color) => html`<button
-          type="button"
-          role="radio"
-          aria-checked=${String(color === theme.color)}
-          aria-label=${color}
-          class="pf-swatch ${color === theme.color ? 'pf-swatch-on' : ''}"
-          style="background:${color}"
-          @click=${() => editTheme((th) => (th.color = color))}
-        >${color === theme.color ? icon('check', 'size-4') : nothing}</button>`,
-      )}
-    </div>
-    <h3>${t('background')}</h3>
-    <div class="pf-chips" role="radiogroup">
-      ${BACKGROUNDS.map(
-        (option) => html`<button
-          type="button"
-          role="radio"
-          aria-checked=${String(option.value === theme.background)}
-          class="pf-chip ${option.value === theme.background ? 'pf-chip-on' : ''}"
-          @click=${() => editTheme((th) => (th.background = option.value))}
-        >${t(option.label)}</button>`,
-      )}
-    </div>
-    <h3>${t('font')}</h3>
-    <div class="pf-chips" role="radiogroup">
-      ${FONTS.map(
-        (option) => html`<button
-          type="button"
-          role="radio"
-          aria-checked=${String(option.value === theme.font)}
-          class="pf-chip pf-font-${option.value} ${option.value === theme.font ? 'pf-chip-on' : ''}"
-          @click=${() => editTheme((th) => (th.font = option.value))}
-        >${t(option.label)}</button>`,
-      )}
-    </div>
-  </aside>`;
 }
 
 function changeKey(question: Question, change: (key: AnswerKey) => void) {
@@ -233,6 +164,7 @@ export function keyDialog(questionId: string) {
     </div>`,
     button(t('done'), closeDialog, { kind: 'primary', id: 'key-done' }),
     'pf-key-dialog',
+    'checkCircle',
   );
 }
 
@@ -247,5 +179,6 @@ export function confirmDialog(text: string, action: () => void, danger = true) {
         action();
       }, { kind: danger ? 'danger' : 'primary', id: 'confirm-yes' })}`,
     'pf-confirm',
+    danger ? 'trash' : 'info',
   );
 }

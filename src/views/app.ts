@@ -1,29 +1,31 @@
-// The whole app: the editor's top bar and tabs, or the form for respondents
-// (with "View responses" for those who read them), the dialogs and a toast.
+// The whole app: the editor's header and tabs, the form for respondents (with
+// "View responses" for those who read them), an editor filling in the form as
+// respondents do, the dialogs and a toast. It draws in Potok's own look: the
+// page's theme, its icons, its pill buttons and cards.
 
 import { html, nothing } from 'lit-html';
 import { COLLECTION } from '../model/config';
 import { plainText } from '../model/rich';
-import { flushSave, keepMine, redo, setActive, takeTheirs, undo } from '../store/editor';
-import { startFilling } from '../store/fill';
+import { fillIn, keepMine, redo, setActive, stopFilling, takeTheirs, undo } from '../store/editor';
+import { previewReason } from '../store/fill';
 import { canRead, canSummarize, loadView } from '../store/responses';
 import { state, update, type EditorTab } from '../store/state';
 import { button, iconButton, notice, ui } from './common';
-import { confirmDialog, keyDialog, publishDialog, themePanel } from './editor/dialogs';
+import { confirmDialog, keyDialog, publishDialog } from './editor/dialogs';
 import { questionsTab } from './editor/editor';
 import { pictureDialog, videoDialog } from './editor/pictures';
 import { settingsTab } from './editor/settings';
-import { icon } from './icons';
+import { icon, type IconName } from './icons';
 import { respondView } from './respond/respond';
 import { responsesView } from './responses/responses';
 
 function saveStatus() {
   const t = ui.t;
   const labels = { saved: t('saved'), dirty: t('unsaved'), saving: t('saving'), error: t('saveFailed'), conflict: t('conflictTitle') };
+  const symbol: IconName = state.save === 'saved' ? 'saved' : state.save === 'error' || state.save === 'conflict' ? 'warning' : 'clock';
 
   return html`<span class="pf-save-status pf-save-${state.save}" id="save-status" role="status" title=${labels[state.save]}>
-    ${icon(state.save === 'saved' ? 'cloudDone' : state.save === 'error' || state.save === 'conflict' ? 'warning' : 'clock', 'size-4')}
-    <span class="pf-save-text">${labels[state.save]}</span>
+    ${icon(symbol, 'size-3.5')}<span class="pf-save-text">${labels[state.save]}</span>
   </span>`;
 }
 
@@ -35,11 +37,11 @@ function setTab(tab: EditorTab) {
   if (tab === 'responses') void loadView();
 }
 
-function preview() {
-  void flushSave();
-  update((s) => (s.preview = true));
-  startFilling();
-}
+const TABS: { tab: EditorTab; icon: IconName; label: 'questionsTab' | 'responsesTab' | 'settingsTab' }[] = [
+  { tab: 'questions', icon: 'listBullet', label: 'questionsTab' },
+  { tab: 'responses', icon: 'summary', label: 'responsesTab' },
+  { tab: 'settings', icon: 'settings', label: 'settingsTab' },
+];
 
 function editorTop() {
   const t = ui.t;
@@ -48,27 +50,25 @@ function editorTop() {
 
   return html`<header class="pf-topbar" id="editor-top">
       <div class="pf-topbar-row">
-        <span class="pf-app-mark" aria-hidden="true">${icon('forms', 'size-7')}</span>
+        <span class="pf-tile" aria-hidden="true">${icon('forms', 'size-6')}</span>
         <div class="pf-topbar-title">
           <span class="pf-topbar-name">${plainText(state.form.title) || t('untitledForm')}</span>
           ${saveStatus()}
         </div>
-        ${iconButton('palette', t('theme'), () => update((s) => (s.dialog = s.dialog?.kind === 'theme' ? null : { kind: 'theme' })), { id: 'open-theme' })}
-        ${iconButton('eye', t('preview'), preview, { id: 'open-preview' })}
-        ${iconButton('undo', t('undo'), undo, { disabled: state.past.length === 0, id: 'undo' })}
-        ${iconButton('redo', t('redo'), redo, { disabled: state.future.length === 0, id: 'redo' })}
-        <button
-          type="button"
-          class="pf-button ${settings.published ? 'pf-button-outline' : 'pf-button-primary'}"
-          id="publish"
-          @click=${() => update((s) => (s.dialog = { kind: 'publish' }))}
-        >
-          ${settings.published ? icon('check', 'size-4') : nothing}<span>${settings.published ? t('published') : t('publish')}</span>
-        </button>
+        <div class="pf-topbar-actions">
+          ${iconButton('undo', t('undo'), undo, { disabled: state.past.length === 0, id: 'undo' })}
+          ${iconButton('redo', t('redo'), redo, { disabled: state.future.length === 0, id: 'redo' })}
+          ${button(t('fillIn'), () => void fillIn(), { kind: 'secondary', icon: 'fill', id: 'open-fill', title: t('fillInTitle') })}
+          ${button(settings.published ? t('published') : t('publish'), () => update((s) => (s.dialog = { kind: 'publish' })), {
+            kind: settings.published ? 'success' : 'primary',
+            icon: settings.published ? 'check' : 'send',
+            id: 'publish',
+          })}
+        </div>
       </div>
       <nav class="pf-tabs" role="tablist">
-        ${(['questions', 'responses', 'settings'] as EditorTab[]).map(
-          (tab) => html`<button
+        ${TABS.map(
+          ({ tab, icon: symbol, label }) => html`<button
             type="button"
             role="tab"
             id="tab-${tab}"
@@ -76,7 +76,7 @@ function editorTop() {
             class="pf-tab ${state.tab === tab ? 'pf-tab-on' : ''}"
             @click=${() => setTab(tab)}
           >
-            ${t(tab === 'questions' ? 'questionsTab' : tab === 'responses' ? 'responsesTab' : 'settingsTab')}
+            ${icon(symbol, 'size-4')}<span>${t(label)}</span>
             ${tab === 'responses' && total ? html`<span class="pf-tab-count">${total}</span>` : nothing}
           </button>`,
         )}
@@ -84,11 +84,27 @@ function editorTop() {
     </header>
     ${state.save === 'conflict'
       ? html`<div class="pf-conflict" id="save-conflict" role="alert">
+          ${icon('warning', 'size-5 shrink-0')}
           <div><strong>${t('conflictTitle')}</strong><p>${t('conflictText')}</p></div>
-          ${button(t('takeTheirs'), takeTheirs, { id: 'take-theirs' })}
+          ${button(t('takeTheirs'), takeTheirs, { kind: 'secondary', id: 'take-theirs' })}
           ${button(t('keepMine'), keepMine, { kind: 'primary', id: 'keep-mine' })}
         </div>`
       : nothing}`;
+}
+
+/** The bar over the form while an editor fills it in: back, and whether it sends. */
+function fillBar() {
+  const t = ui.t;
+  const preview = previewReason() !== null;
+
+  return html`<div class="pf-fill-bar" id="fill-bar">
+    ${button(t('exitPreview'), () => stopFilling(), { kind: 'secondary', icon: 'back', id: 'exit-fill' })}
+    <span class="pf-status ${preview ? 'pf-status-preview' : 'pf-status-live'}" id="fill-status">
+      ${icon(preview ? 'eye' : 'send', 'size-4')}
+      <span class="pf-long">${preview ? t('fillPreview') : t('fillLive')}</span>
+      <span class="pf-short">${preview ? t('fillPreviewShort') : t('fillLiveShort')}</span>
+    </span>
+  </div>`;
 }
 
 function readerTop() {
@@ -100,7 +116,7 @@ function readerTop() {
     ${button(onResponses ? t('backToForm') : t('viewResponses'), () => {
       update((s) => (s.readerScreen = onResponses ? 'form' : 'responses'));
       if (!onResponses) void loadView();
-    }, { id: 'reader-switch', icon: onResponses ? 'forms' : 'summary' })}
+    }, { id: 'reader-switch', kind: 'soft', icon: onResponses ? 'forms' : 'summary' })}
   </div>`;
 }
 
@@ -111,8 +127,6 @@ function dialogs() {
   switch (d.kind) {
     case 'publish':
       return publishDialog();
-    case 'theme':
-      return themePanel();
     case 'picture':
       return pictureDialog(d.target);
     case 'video':
@@ -124,17 +138,15 @@ function dialogs() {
   }
 }
 
-function themeStyle() {
-  const theme = state.form.theme;
-  return `--pf-accent:${theme.color};`;
-}
-
 function phaseView() {
   const t = ui.t;
 
   switch (state.phase) {
     case 'loading':
-      return html`<p class="pf-center pf-muted" id="form-loading">${t('loading')}</p>`;
+      return html`<div class="pf-loading" id="form-loading" role="status">
+        <span class="pf-tile pf-pulse" aria-hidden="true">${icon('forms', 'size-6')}</span>
+        <span class="pf-muted">${t('loading')}</span>
+      </div>`;
     case 'failed':
       return html`<div class="pf-column">${notice(t('failed'), 'warning', 'form-failed')}</div>`;
     case 'outdated':
@@ -150,26 +162,22 @@ function phaseView() {
 
 export function appView() {
   const phase = phaseView();
-  const theme = state.form.theme;
-  const rootClass = `pf-root pf-bg-${theme.background} pf-font-${theme.font}`;
 
-  if (phase) return html`<div class=${rootClass} style=${themeStyle()}>${phase}</div>`;
+  if (phase) return html`<div class="pf-root"><main class="pf-main">${phase}</main></div>`;
 
   const editor = state.reply?.manage === true;
+  const closeMenu = () => state.menu && update((s) => (s.menu = null));
 
-  if (editor && state.preview) {
-    return html`<div class=${rootClass} style=${themeStyle()}>
-      <div class="pf-preview-bar" id="preview-bar">
-        ${icon('eye')}<span>${ui.t('previewNote')}</span><span class="flex-1"></span>
-        ${button(ui.t('exitPreview'), () => update((s) => (s.preview = false)), { id: 'exit-preview', kind: 'primary' })}
-      </div>
+  if (editor && state.filling) {
+    return html`<div class="pf-root" @click=${closeMenu}>
+      ${fillBar()}
       <main class="pf-main">${respondView()}</main>
       ${dialogs()}${toast()}
     </div>`;
   }
 
   if (editor) {
-    return html`<div class=${rootClass} style=${themeStyle()} @click=${() => state.menu && update((s) => (s.menu = null))}>
+    return html`<div class="pf-root" @click=${closeMenu}>
       ${editorTop()}
       <main class="pf-main" @click=${(event: Event) => event.target === event.currentTarget && setActive(null)}>
         ${state.tab === 'questions' ? questionsTab() : state.tab === 'responses' ? responsesView() : settingsTab()}
@@ -178,7 +186,7 @@ export function appView() {
     </div>`;
   }
 
-  return html`<div class=${rootClass} style=${themeStyle()} @click=${() => state.menu && update((s) => (s.menu = null))}>
+  return html`<div class="pf-root" @click=${closeMenu}>
     ${readerTop()}
     <main class="pf-main">${state.readerScreen === 'responses' && (canRead() || canSummarize()) ? responsesView() : respondView()}</main>
     ${dialogs()}${toast()}
@@ -186,7 +194,11 @@ export function appView() {
 }
 
 function toast() {
-  return state.toast ? html`<div class="pf-toast" role="status" id="pf-toast">${state.toast}</div>` : nothing;
+  return state.toast
+    ? html`<div class="pf-toast" role="status" id="pf-toast">
+        <span class="pf-toast-icon" aria-hidden="true">${icon('info', 'size-4')}</span><span>${state.toast}</span>
+      </div>`
+    : nothing;
 }
 
 export function collectionCaps() {

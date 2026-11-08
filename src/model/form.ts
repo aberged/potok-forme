@@ -115,25 +115,8 @@ export type VideoItem = { type: 'video'; id: string; title: string; url: string 
 
 export type Item = Question | Section | TextItem | PictureItem | VideoItem;
 
-export type ThemeColor = string;
-export const THEME_COLORS: ThemeColor[] = [
-  '#673ab7',
-  '#3f51b5',
-  '#4285f4',
-  '#03a9f4',
-  '#00bcd4',
-  '#009688',
-  '#4caf50',
-  '#ff9800',
-  '#ff5722',
-  '#db4437',
-  '#e91e63',
-  '#9e9e9e',
-];
-export type Background = 'light' | 'medium' | 'dark' | 'plain';
-export type Font = 'basic' | 'decorative' | 'formal' | 'playful';
-
-export type Theme = { color: ThemeColor; background: Background; header: Picture | null; font: Font };
+/** A form looks like Potok; it chooses only a picture over its title. */
+export type Theme = { header: Picture | null };
 
 export type Quiz = {
   enabled: boolean;
@@ -276,7 +259,7 @@ export function newForm(title = ''): Form {
     title,
     description: '',
     startNext: NEXT,
-    theme: { color: THEME_COLORS[0], background: 'light', header: null, font: 'basic' },
+    theme: { header: null },
     settings: defaultSettings(),
     items: [newQuestion('choice')],
   };
@@ -512,12 +495,8 @@ export function normalizeForm(value: unknown): Form {
     title: text(source.title, '', 300),
     description: text(source.description),
     startNext: typeof source.startNext === 'string' ? source.startNext : NEXT,
-    theme: {
-      color: typeof theme.color === 'string' && /^#[0-9a-f]{6}$/i.test(theme.color) ? theme.color : THEME_COLORS[0],
-      background: oneOf(theme.background, ['light', 'medium', 'dark', 'plain'] as const, 'light'),
-      header: safePicture(theme.header),
-      font: oneOf(theme.font, ['basic', 'decorative', 'formal', 'playful'] as const, 'basic'),
-    },
+    // Colors, backgrounds and fonts of early forms go: Potok's theme draws them.
+    theme: { header: safePicture(theme.header) },
     settings: normalizeSettings(source.settings),
     items,
   };

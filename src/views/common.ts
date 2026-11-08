@@ -1,5 +1,5 @@
-// Pieces every screen uses: formatted text, fields that look like Google's
-// underlined ones, a switch, menus, dialogs and the role picker.
+// Pieces every screen uses: formatted text, fields, a switch, menus, dialogs,
+// buttons and the role picker, each in the shape Potok's page gives it.
 
 import { html, nothing, type TemplateResult } from 'lit-html';
 import { live } from 'lit-html/directives/live.js';
@@ -222,7 +222,14 @@ export function closeDialog() {
   update((s) => (s.dialog = null));
 }
 
-export function dialog(title: string, body: TemplateResult, actions: TemplateResult, id = 'pf-dialog') {
+/** A dialog as Potok draws one: a sheet from the bottom on a phone, a card in the middle on a wide screen. */
+export function dialog(
+  title: string,
+  body: TemplateResult,
+  actions: TemplateResult,
+  id = 'pf-dialog',
+  symbol: IconName | null = null,
+) {
   return html`<div class="pf-backdrop" @click=${closeDialog}>
     <div
       class="pf-dialog"
@@ -233,18 +240,30 @@ export function dialog(title: string, body: TemplateResult, actions: TemplateRes
       @click=${(event: Event) => event.stopPropagation()}
       @keydown=${(event: KeyboardEvent) => event.key === 'Escape' && closeDialog()}
     >
-      <h2 id="${id}-title" class="pf-dialog-title">${title}</h2>
+      <header class="pf-dialog-head">
+        ${symbol ? html`<span class="pf-tile pf-tile-small" aria-hidden="true">${icon(symbol)}</span>` : nothing}
+        <h2 id="${id}-title" class="pf-dialog-title">${title}</h2>
+        <button type="button" class="pf-icon-button" aria-label=${ui.t('close')} @click=${closeDialog}>${icon('close')}</button>
+      </header>
       <div class="pf-dialog-body">${body}</div>
-      <div class="pf-dialog-actions">${actions}</div>
+      <footer class="pf-dialog-actions">${actions}</footer>
     </div>
   </div>`;
 }
 
-export function button(label: string, onClick: () => void, options: { kind?: 'primary' | 'text' | 'danger'; id?: string; disabled?: boolean; icon?: IconName } = {}) {
+/** Potok's buttons: primary, secondary with a border, soft in the primary color, quiet, and the two that say how it went. */
+export type ButtonKind = 'primary' | 'secondary' | 'soft' | 'text' | 'success' | 'danger';
+
+export function button(
+  label: string,
+  onClick: () => void,
+  options: { kind?: ButtonKind; id?: string; disabled?: boolean; icon?: IconName; title?: string } = {},
+) {
   return html`<button
     type="button"
     id=${options.id ?? nothing}
     class="pf-button pf-button-${options.kind ?? 'text'}"
+    title=${options.title ?? nothing}
     ?disabled=${options.disabled}
     @click=${onClick}
   >
@@ -285,7 +304,7 @@ export function roleNames(keys: string[]): string {
 
 export function notice(text: string, kind: 'info' | 'warning' = 'info', id?: string) {
   return html`<div class="pf-notice pf-notice-${kind}" role="status" id=${id ?? nothing}>
-    ${icon(kind === 'warning' ? 'warning' : 'bell', 'size-5 shrink-0')}<span>${text}</span>
+    <span class="pf-notice-icon" aria-hidden="true">${icon(kind === 'warning' ? 'warning' : 'info', 'size-4')}</span><span>${text}</span>
   </div>`;
 }
 

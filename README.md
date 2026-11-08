@@ -1,6 +1,6 @@
 # potok forme
 
-Forma za unos u stilu Google Forms-a: Potok aplikacija koju donosi šablon **Forma** u meniju „Kreiraj podgrupu“. Napravljena je po šablonu [potok-vite](../potok-vite/README.md): Vite, TypeScript, Tailwind, daisyUI sa prefiksom `d-` i lit-html.
+Forma za unos koja radi kao Google Forms, a izgleda kao ostatak Potoka: Potok aplikacija koju donosi šablon **Forma** u meniju „Kreiraj podgrupu“. Napravljena je po šablonu [potok-vite](../potok-vite/README.md): Vite, TypeScript, Tailwind, daisyUI sa prefiksom `d-` i lit-html.
 
 Definicija forme i odgovori su data vrednosti grupe, u kolekcijama sa pravilima (`PotokIde.Social.AppData` u potok-ide):
 
@@ -35,9 +35,13 @@ U dev režimu:
 
 ## Šta ume
 
-- **Uređivač**: 12 tipova pitanja, opcije sa slikama i „Drugo“, mešanje, provera odgovora, sekcije i prelaz na sekciju po odgovoru, naslovi, slike i video, prevlačenje, opoziv i ponavljanje, automatsko čuvanje sa revizijom i konfliktom, tema (boja, pozadina, slika zaglavlja, stil slova), pregled i objava.
+- **Uređivač**: 12 tipova pitanja, opcije sa slikama i „Drugo“, mešanje, provera odgovora, sekcije i prelaz na sekciju po odgovoru, naslovi, slike i video, prevlačenje, opoziv i ponavljanje, automatsko čuvanje sa revizijom i konfliktom, slika zaglavlja i objava. **Popuni** pokazuje uredniku formu kakvu vide ispitanici: odgovor se šalje kao svaki drugi kad ga pravila puštaju, a inače je to pregled, uz razlog.
 - **Popunjavanje**: sekcija po sekcija, traka napretka, obavezna pitanja i provere, nacrt na uređaju, fajlovi, potvrda, još jedan odgovor, izmena odgovora, rezultat kviza.
 - **Odgovori**: rezime sa grafikonima, pregled po pitanju i ko je šta izabrao, pojedinačni odgovori sa ručnim ocenjivanjem, tabela sa stranicama, CSV, brisanje, prijem odgovora i poruka kad je zatvoren, obaveštenja za mene, objava ocena.
+
+## Izgled
+
+Forma nema svoje boje: uzima temu stranice Potoka (svetlu ili tamnu), čije CSS promenljive okvir dobija sa stranice. Kartice, dugmad u obliku pilule, prekidači i dijalozi prate `core_components.ex` iz potok-ide, a ikonice su Heroicons, iste kao na stranici: `src/views/icons.ts` piše skripta iz `deps/heroicons` u potok-ide. Grafikoni koriste primarnu boju u svetloj temi i za nijansu dublje plavo nebo u tamnoj, jer je primarna boja tamne teme prebleda za stubiće.
 
 ## Jezici
 

@@ -16,7 +16,7 @@ import {
   type Problem,
 } from '../model/answers';
 import { FIRST_SECTION, sections, type Question } from '../model/form';
-import type { Translate } from '../i18n';
+import type { Key, Translate } from '../i18n';
 import type { PotokCollectionValue } from '../potok';
 import { emptyFill, state, toast, update } from './state';
 
@@ -28,12 +28,32 @@ export function setFillTranslator(translate: Translate) {
   t = translate;
 }
 
+/**
+ * Why an editor going through the form sends nothing, or null when what they
+ * send is a response like anyone's: Potok holds editors to the form's rules.
+ */
+export function previewReason(editing: PotokCollectionValue | null = state.fill.editing): Key | null {
+  if (!state.filling) return null;
+
+  const caps = state.reply?.caps[COLLECTION];
+  if (!state.form.settings.published) return 'previewNotPublished';
+  if (!caps?.write) {
+    switch (caps?.write_block) {
+      case 'closed': return 'previewClosed';
+      case 'role': return 'previewRole';
+      default: return 'previewCannot';
+    }
+  }
+  if (caps.once && caps.written && !editing) return 'previewAnswered';
+  return null;
+}
+
 const draftKey = () => `forma:draft:${state.reply?.viewer.profile_id ?? 'guest'}`;
 
 function saveDraft() {
   if (draftTimer) clearTimeout(draftTimer);
   draftTimer = setTimeout(() => {
-    if (state.fill.done || state.preview || state.fill.editing) return;
+    if (state.fill.done || state.fill.editing || previewReason()) return;
     try {
       localStorage.setItem(
         draftKey(),
@@ -71,7 +91,7 @@ function loadDraft(): { answers: Record<string, Answer>; other: Record<string, s
 
 /** A fresh form, or one of the viewer's responses to change. */
 export function startFilling(editing: PotokCollectionValue | null = null) {
-  const draft = editing || state.preview ? null : loadDraft();
+  const draft = editing || previewReason(editing) ? null : loadDraft();
   const known = new Set(sections(state.form).map((section) => section.id));
 
   update((s) => {
@@ -198,8 +218,11 @@ const sendError = (error: string, message?: string) => {
 export async function submit(): Promise<void> {
   if (!checkSection() || state.fill.sending) return;
 
-  if (state.preview) {
-    update((s) => (s.fill.done = true));
+  if (previewReason()) {
+    update((s) => {
+      s.fill.done = true;
+      s.fill.previewed = true;
+    });
     return;
   }
 

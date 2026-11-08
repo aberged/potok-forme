@@ -19,7 +19,8 @@ import {
   type Theme,
 } from '../model/form';
 import { newId } from '../model/ids';
-import { state, toast, update, type State } from './state';
+import { startFilling } from './fill';
+import { state, toast, update, type EditorTab, type State } from './state';
 import type { Translate } from '../i18n';
 
 const SAVE_DELAY_MS = 1_500;
@@ -374,6 +375,34 @@ export function setPublished(published: boolean) {
 let ensuring: Promise<boolean> | null = null;
 
 /** The app's file groups, made the first time a question or a picture needs them. */
+/**
+ * The editor goes through the form as those who fill it in do. What they may
+ * send is read again first: Potok knew it before this editor's last save.
+ */
+export async function fillIn() {
+  update((s) => {
+    s.menu = null;
+    s.dialog = null;
+  });
+  await flushSave();
+
+  const reply = await window.potok.getConfig();
+  update((s) => {
+    if (reply.ok) s.reply = reply;
+    s.filling = true;
+  });
+  startFilling();
+  window.scrollTo({ top: 0 });
+}
+
+export function stopFilling(tab: EditorTab | null = null) {
+  update((s) => {
+    s.filling = false;
+    if (tab) s.tab = tab;
+  });
+  window.scrollTo({ top: 0 });
+}
+
 export async function ensureFileGroups(): Promise<boolean> {
   const files = state.reply?.files;
   if (files && files.public === 'ok' && files.private === 'ok') return true;
