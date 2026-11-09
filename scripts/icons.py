@@ -2,7 +2,7 @@
 the same icons as the page. Heroicons comes with potok-ide's dependencies:
 run `mix deps.get` there first, with potok-ide next to this project, then
 `python scripts/icons.py` here. Heroicons is MIT licensed by Tailwind Labs;
-its notice goes into the file it writes and is in LICENSE."""
+its notice goes into the file it writes and is in THIRD_PARTY_NOTICES.md."""
 
 import re
 import sys

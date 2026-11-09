@@ -65,4 +65,4 @@ Stranica Potoka upisuje jezik u `<html lang>` okvira: `sr`, `sr-Cyrl` ili `en`. 
 
 ## Licenca
 
-MIT, vidi [LICENSE](LICENSE). Ikonice u `src/views/icons.ts` su iz [Heroicons](https://github.com/tailwindlabs/heroicons), takođe pod MIT licencom (Tailwind Labs), čija je napomena u istom fajlu i u LICENSE.
+MIT, vidi [LICENSE](LICENSE). Ikonice u `src/views/icons.ts` su iz [Heroicons](https://github.com/tailwindlabs/heroicons), takođe pod MIT licencom (Tailwind Labs), čija je napomena u istom fajlu i u [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
