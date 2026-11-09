@@ -1,6 +1,6 @@
 # potok forme
 
-Forma za unos koja radi kao Google Forms, a izgleda kao ostatak Potoka: Potok aplikacija koju donosi šablon **Forma** u meniju „Kreiraj podgrupu“. Napravljena je po šablonu [potok-vite](../potok-vite/README.md): Vite, TypeScript, Tailwind, daisyUI sa prefiksom `d-` i lit-html.
+Forma za unos koja radi kao Google Forms, a izgleda kao ostatak Potoka: Potok aplikacija koju donosi šablon **Forma** u meniju „Kreiraj podgrupu“. Napravljena je po šablonu [potok-vite](https://github.com/aberged/potok-vite/tree/align-alt-descriptions): Vite, TypeScript, Tailwind, daisyUI sa prefiksom `d-` i lit-html.
 
 Definicija forme i odgovori su data vrednosti grupe, u kolekcijama sa pravilima (`PotokIde.Social.AppData` u potok-ide):
 
@@ -8,7 +8,7 @@ Definicija forme i odgovori su data vrednosti grupe, u kolekcijama sa pravilima 
 - odgovori su vrednosti kolekcije `responses`, a rezime broji Potok (`summarizeValues`);
 - fajlovi idu u podgrupe „Fajlovi“ i „Privatni fajlovi“ (`ensureFileGroups`, `uploadFile`, `uploadImage`, `fileUrl`).
 
-Vodič za ceo sklop je u potok-ide, [docs/forma.md](../potok-ide/docs/forma.md).
+Vodič za ceo sklop je u potok-ide, [docs/forma.md](https://github.com/aberged/potok-ide/blob/dev/docs/forma.md).
 
 ## Brzi start
 
@@ -41,7 +41,7 @@ U dev režimu:
 
 ## Izgled
 
-Forma nema svoje boje: uzima temu stranice Potoka (svetlu ili tamnu), čije CSS promenljive okvir dobija sa stranice. Kartice, dugmad u obliku pilule, prekidači i dijalozi prate `core_components.ex` iz potok-ide, a ikonice su Heroicons, iste kao na stranici: `src/views/icons.ts` piše skripta iz `deps/heroicons` u potok-ide. Grafikoni koriste primarnu boju u svetloj temi i za nijansu dublje plavo nebo u tamnoj, jer je primarna boja tamne teme prebleda za stubiće.
+Forma nema svoje boje: uzima temu stranice Potoka (svetlu ili tamnu), čije CSS promenljive okvir dobija sa stranice. Kartice, dugmad u obliku pilule, prekidači i dijalozi prate `core_components.ex` iz potok-ide, a ikonice su Heroicons, iste kao na stranici: `src/views/icons.ts` piše `python scripts/icons.py` iz `deps/heroicons` u potok-ide, posle `mix deps.get` tamo. Grafikoni koriste primarnu boju u svetloj temi i za nijansu dublje plavo nebo u tamnoj, jer je primarna boja tamne teme prebleda za stubiće.
 
 ## Jezici
 
@@ -60,4 +60,9 @@ Stranica Potoka upisuje jezik u `<html lang>` okvira: `sr`, `sr-Cyrl` ili `en`. 
 | [src/views/](src/views) | lit-html prikaz; grafikoni u `views/charts.ts` |
 | [src/model/model.test.ts](src/model/model.test.ts) | vitest testovi |
 | [src/dev-tools.ts](src/dev-tools.ts), [src/dev-theme.css](src/dev-theme.css) | samo za dev |
+| [scripts/icons.py](scripts/icons.py) | piše `src/views/icons.ts` iz Heroicons-a u potok-ide |
 | [src/potok.ts](src/potok.ts), [src/potok-dev.ts](src/potok-dev.ts), [vite.config.ts](vite.config.ts) | iz šablona, bez izmena |
+
+## Licenca
+
+MIT, vidi [LICENSE](LICENSE). Ikonice u `src/views/icons.ts` su iz [Heroicons](https://github.com/tailwindlabs/heroicons), takođe pod MIT licencom (Tailwind Labs), čija je napomena u istom fajlu i u LICENSE.
