@@ -27,7 +27,13 @@ export async function boot(t: Translate) {
   }
 
   if (!reply.ok) {
+    // A guest is turned away like anyone outside, and may be a member who has
+    // not logged in: only the profile tells.
+    const denied = reply.error === 'not_a_member' || reply.error === 'forbidden';
+    const profile = denied ? await window.potok.getCurrentProfile().catch(() => undefined) : undefined;
+
     update((s) => {
+      s.deniedGuest = profile === null;
       if (reply.error === 'unknown_method') s.phase = 'outdated';
       else if (reply.error === 'preview') s.phase = 'previewFrame';
       else if (reply.error === 'not_a_member' || reply.error === 'forbidden') {

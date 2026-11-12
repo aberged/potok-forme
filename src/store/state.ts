@@ -79,6 +79,8 @@ export type ResponsesState = {
 export type State = {
   phase: Phase;
   denied: string | null;
+  /** Turned away with no account: a member who has not logged in yet gets in by logging in. */
+  deniedGuest: boolean;
   reply: PotokConfigReply | null;
   /** The config's revision the editor works from. */
   revision: number;
@@ -155,6 +157,7 @@ const initial = newForm();
 export const state: State = {
   phase: 'loading',
   denied: null,
+  deniedGuest: false,
   reply: null,
   revision: 0,
   form: initial,

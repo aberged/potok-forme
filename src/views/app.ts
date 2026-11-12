@@ -154,7 +154,14 @@ function phaseView() {
     case 'previewFrame':
       return html`<div class="pf-column">${notice(t('previewFrame'), 'info', 'form-preview-frame')}</div>`;
     case 'denied':
-      return html`<div class="pf-column">${notice(state.denied ?? t('membersOnly'), 'info', 'form-denied')}</div>`;
+      return html`<div class="pf-column">
+        ${notice(state.denied ?? t('membersOnly'), 'info', 'form-denied')}
+        ${state.deniedGuest
+          ? html`<div class="pf-nav">
+              ${button(t('logIn'), () => void window.potok.openLogin(), { id: 'form-denied-log-in', kind: 'primary' })}
+            </div>`
+          : nothing}
+      </div>`;
     default:
       return null;
   }

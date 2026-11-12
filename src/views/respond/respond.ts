@@ -110,6 +110,19 @@ function closedCard(message: string) {
   </section>`;
 }
 
+/** For a guest, someone without an account: the form takes answers, after logging in. */
+function signInCard() {
+  const t = ui.t;
+
+  return html`<section class="pf-card pf-message-card" id="form-sign-in">
+    <h2 class="pf-section-title">${t('signInTitle')}</h2>
+    <p>${t('signIn')}</p>
+    <div class="pf-nav">
+      ${button(t('logIn'), () => void window.potok.openLogin(), { id: 'form-log-in', kind: 'primary' })}
+    </div>
+  </section>`;
+}
+
 /** What a viewer who cannot fill in the form sees in its place. */
 function blockedReason(c: PotokCaps | null): string | null {
   const t = ui.t;
@@ -243,13 +256,16 @@ export function respondView() {
 
   const reason = blockedReason(c);
   const already = !state.filling && c?.once && c.written && !fill.editing;
+  const guest = !state.filling && state.form.settings.published && !state.reply?.viewer.signed_in;
 
   if (reason || already) {
     return html`<div class="pf-column">
       ${headerCard(false)}
       ${already
         ? html`<section class="pf-card pf-message-card" id="form-already"><p>${t('alreadyResponded')}</p><p class="pf-muted pf-small">${t('onlyOnceNote')}</p>${yourResponses(c)}</section>`
-        : closedCard(reason!)}
+        : guest
+          ? signInCard()
+          : closedCard(reason!)}
       ${c?.summary && !already
         ? html`<div class="pf-nav">${button(t('viewSummary'), () => {
             update((s) => (s.readerScreen = 'responses'));
